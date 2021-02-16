@@ -9,7 +9,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } fr
 export class BoardComponent implements OnInit, AfterViewInit {
 
 
-  @ViewChild( 'co', {static: true} ) co: ElementRef;
+  @ViewChild( 'container', {static: true} ) container: ElementRef;
   private placement_angles: number[];
 
   constructor(private renderer: Renderer2) {
@@ -19,25 +19,23 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   private setup(num_of_players: number, radius: number) {
     //let main:string = document.getElementById(id);
-    let mainHeight: number = window.innerHeight;
+    let mainHeight: number = this.container.nativeElement.offsetHeight;
+    let mainWidth: number = this.container.nativeElement.offsetWidth;
+    console.log("hei = " + mainHeight );
+    console.log("wid = " + mainWidth );
     let circleArray: HTMLElement[] = [];
     for (var i = 0; i < num_of_players; i++) {
       let circle:HTMLElement= this.renderer.createElement('div');
-      this.renderer.appendChild(this.co.nativeElement,circle);
+      this.renderer.appendChild(this.container.nativeElement,circle);
       circle.setAttribute("posX",Math.round(radius * (Math.cos(this.placement_angles[i]))) + 'px');
       circle.setAttribute("posY",Math.round(radius * (Math.sin(this.placement_angles[i]))) + 'px');
       circle.className = 'circle number' + i;
       circleArray.push(circle);
-      // circleArray[i].posx = Math.round(radius * (Math.cos(this.placement_angles[i]))) + 'px';
-      // circleArray[i].posy = Math.round(radius * (Math.sin(this.placement_angles[i]))) + 'px';
       circleArray[i].style.position = "absolute";
-      circleArray[i].style.top = ((mainHeight / 2) - parseInt(circleArray[i].getAttribute("posX").slice(0, -2)) -100 ) + 'px';
-      circleArray[i].style.left = ((mainHeight / 2) + parseInt(circleArray[i].getAttribute("posY").slice(0, -2))) + 'px';
+      circleArray[i].style.top = ((mainHeight / 2) - parseInt(circleArray[i].getAttribute("posX").slice(0, -2)) - 100 ) + 'px'; //100 should be the dig height/2
+      circleArray[i].style.left = ((mainWidth / 2) + parseInt(circleArray[i].getAttribute("posY").slice(0, -2))) + 'px';
       circleArray[i].style.transform = "rotate(" + ( i * (360 / num_of_players)) + "deg)";
-      //this.co.nativeElement.appendChild(circleArray[i]);
-      //this.renderer.appendChild( this.co, circleArray[i] );
-      //this.co.nativeElement.value+=circleArray[i];
-      //console.log("omg"+circleArray[i]);
+      circleArray[i].style
     }
   };
 
@@ -57,8 +55,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    console.log(this.co.nativeElement.offsetHeight);
-    this.generate(5, Math.round(this.co.nativeElement.offsetHeight * 0.5));
+    console.log(this.container.nativeElement.offsetHeight);
+    this.generate(5, Math.round(this.container.nativeElement.offsetHeight * 0.5));
 
   }
 
