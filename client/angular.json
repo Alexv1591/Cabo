@@ -20,6 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": ["colyseus.js"],
             "outputPath": "dist/Cabo",
             "index": "src/index.html",
             "main": "src/main.ts",
