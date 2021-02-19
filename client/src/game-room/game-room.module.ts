@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { GameRoomRoutingModule } from './gameroom-routing.module';
+import { GameRoomRoutingModule } from './game-room-routing.module';
 import { BoardComponent } from './board/board.component';
 import { ChatComponent } from './chat/chat.component';
 import { GameRoomComponent } from './game-room.component';

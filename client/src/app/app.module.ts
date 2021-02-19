@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { GameRoomModule } from 'src/game-room/gameroom.module';
+import { GameRoomModule } from 'src/game-room/game-room.module';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
