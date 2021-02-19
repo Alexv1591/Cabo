@@ -51,7 +51,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
 
 
-  ngOnInit(): void {  }
+  ngOnInit(): void { 
+   }
 
 
   ngAfterViewInit(): void {
