@@ -1,10 +1,10 @@
 import { Room, Client } from "colyseus";
-import { CaboState } from "./schema/CaboState";
+import { CaboState } from "./State/CaboState";
 
 export class MyRoom extends Room {
 
   onCreate (options: any) {
-    this.setState(new MyRoomState());
+    this.setState(new CaboState());
 
     this.onMessage("type", (client, message) => {
       console.log(client.id+" "+message)
