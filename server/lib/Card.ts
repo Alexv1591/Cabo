@@ -1,10 +1,10 @@
-enum SUIT {
+export enum SUIT {
     HEART = 'Heart',
     DIAMOND = 'Diamond',
     CLUB = 'Club',
     SPADE = 'Spade'
 }
-enum RANK {
+export enum RANK {
     TWO = 2,
     THREE,
     FOUR,
@@ -17,59 +17,92 @@ enum RANK {
     JACK,
     QUEEN,
     KING,
-    ACE
+    ACE,
+    JOKER,
 }
 
-class Card {
+export class CardInterface{ // both Card and Joker extends this class
     private imagePath: string = "";
-    constructor(private card_number: RANK, private card_suit :SUIT) {
-        //this.imagePath = "cards/" + card_suit + (this.card_number>10)?transformPipNumToLetter(this.card_number):this.card_number + ".png";
-    }
-
-    public get rank():RANK { return this.card_number };
-
-    get suit() :SUIT { return this.card_suit; }
-
-    toString() {
-        return ((this.card_number > 10) ? transformPipNumToLetter(this.card_number) : this.card_number) + SuitToSymbol(this.card_suit);
-    }
-}
-function transformPipNumToLetter(card_number) {
-    switch (card_number) {
-        case 11:
-            card_number = 'J';
-            break;
-        case 12:
-            card_number = 'Q';
-            break;
-        case 13:
-            card_number = 'K';
-            break;
-        case 14:
-            card_number = 'A';
-            break;
-        default:
-            throw "the world is completely false (card number error)";
-            break;
-    }
-    return card_number;
+    constructor(private _rank:RANK)
+    {   }
+    public get rank():RANK { return this._rank };
+    
+    public get val():number { return this.rank.valueOf(); }
 }
 
-function SuitToSymbol(card_suit) {
-    switch (card_suit) {
-        case SUIT.HEART:
-            return "\u2665";
-        case SUIT.DIAMOND:
-            return "\u2666";
-        case SUIT.CLUB:
-            return "\u2663";
-        case SUIT.SPADE:
-            return "\u2660"
-        default:
-            return "?"
+export class Card extends CardInterface{
+    constructor(card_number: RANK, private card_suit :SUIT) {
+        super(card_number);
+        if(this.rank===RANK.JOKER)
+            throw "Joker is'nt a regular card. It has a class for its own"
+        //super.imagePath = "cards/" + card_suit + (this.card_number>10)?transformPipNumToLetter(this.card_number):this.card_number + ".png";
+    }
+
+    public get suit() :SUIT { return this.card_suit; }
+
+    public get val():number{
+        if(this.rank===RANK.KING && ( this.suit===SUIT.HEART || this.suit===SUIT.DIAMOND)) // black king
+            return -2;
+        if(this.rank===RANK.ACE)
+            return 1;
+        return super.val;
+        
+    }
+
+//    public get img() : string {return this.imagePath}
+
+    public toString() {
+        return this.rankNumToLetter() + this.suitToSymbol();
+    }
+
+    private rankNumToLetter() {
+        let ret_val='';
+        if(this.rank.valueOf()<=10)
+            return this.rank.valueOf();
+        switch (this.rank) {
+            case RANK.JACK:
+                return 'J';
+            case RANK.QUEEN:
+                return 'Q';
+            case RANK.KING:
+                return 'K';
+            case RANK.ACE:
+                return 'A';
+            default:
+                throw "the world is completely false (card number error)";
+        }
+    }
+    
+    private suitToSymbol() {
+        switch (this.suit) {
+            case SUIT.HEART:
+                return "\u2665";
+            case SUIT.DIAMOND:
+                return "\u2666";
+            case SUIT.CLUB:
+                return "\u2663";
+            case SUIT.SPADE:
+                return "\u2660";
+            default:
+                return "?";
+        }
+    
+    }
+}
+export class Joker extends CardInterface{
+    constructor()
+    {
+        super(RANK.JOKER);
+        //add img path
+    }
+
+    public get val()
+    {
+        return -1;
+    }
+
+    public toString() {
+        return "JOKER";
     }
 
 }
-
-let card :Card = new Card(12,SUIT.HEART);
-console.log(card);
