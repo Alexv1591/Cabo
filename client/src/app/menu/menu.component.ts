@@ -12,4 +12,9 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  
+// <app-board></app-board>
+
+// <app-chat></app-chat>
+
 }
