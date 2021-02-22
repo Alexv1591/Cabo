@@ -37,6 +37,3 @@ export class CardPack extends Schema
         return this.deck.shift();
     }
 }
-let deck=new CardPack();
-for(let i=0;i<54;i++)
-    console.log(deck.draw()+"")

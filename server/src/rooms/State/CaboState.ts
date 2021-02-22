@@ -1,5 +1,8 @@
 import { Schema, type, MapSchema, ArraySchema } from "@colyseus/schema";
 
+import { CardPack } from "../../../lib/CardPack"
+import { CardInterface } from "../../../lib/Card"
+
 export class CaboState extends Schema {
   
   @type("string")
@@ -11,8 +14,8 @@ export class CaboState extends Schema {
   @type("number")
   numOfPlayer:number;
 
-  @type([Card])
-  discard_pile:ArraySchema<Card> =new ArraySchema<Card>();
+  @type([CardInterface])
+  discard_pile:ArraySchema<CardInterface> =new ArraySchema<CardInterface>();
   
   @type(CardPack)
   pack:CardPack=new CardPack();

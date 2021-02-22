@@ -1,3 +1,5 @@
+import { Schema } from "@colyseus/schema";
+
 export enum SUIT {
     HEART = 'Heart',
     DIAMOND = 'Diamond',
@@ -21,10 +23,10 @@ export enum RANK {
     JOKER,
 }
 
-export class CardInterface{ // both Card and Joker extends this class
+export class CardInterface extends Schema { // both Card and Joker extends this class
     private imagePath: string = "";
     constructor(private _rank:RANK)
-    {   }
+    { super()  }
     public get rank():RANK { return this._rank };
     
     public get val():number { return this.rank.valueOf(); }
