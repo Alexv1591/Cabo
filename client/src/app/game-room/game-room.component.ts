@@ -11,7 +11,7 @@ export class GameRoomComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    const client=new Client('ws://localhost:3000')
+    //const client=new Client('ws://localhost:3000')
     // try {
     //   const room =client.joinOrCreate("my_room", {/* options */});
     //   console.log("joined successfully", room);
