@@ -1,13 +1,13 @@
 import { Schema } from "@colyseus/schema";
-import {SUIT,RANK,CardInterface,Card,Joker} from "./Card"
+import {SUIT,RANK,Card,NormalCard,Joker} from "./Card"
 export class CardPack extends Schema
 { 
-    private deck:Array<CardInterface>;
+    private deck:Array<Card>;
 
     constructor()
     {
         super();
-        this.deck = new Array<CardInterface>();
+        this.deck = new Array<Card>();
         this.createDeck();
         this.shuffle();
     }
@@ -16,7 +16,7 @@ export class CardPack extends Schema
         for( let i= RANK.TWO; i<RANK.JOKER ; i++ )
         {
             Object.keys(SUIT).forEach(suit=>{
-                this.deck.push(new Card(i,SUIT[suit as keyof typeof SUIT]));
+                this.deck.push(new NormalCard(i,SUIT[suit as keyof typeof SUIT]));
             });
         }
         for(let i=0;i<2;i++){
@@ -37,6 +37,3 @@ export class CardPack extends Schema
         return this.deck.shift();
     }
 }
-let deck=new CardPack();
-for(let i=0;i<54;i++)
-    console.log(deck.draw()+"")

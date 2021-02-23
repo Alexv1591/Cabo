@@ -1,6 +1,6 @@
 import { Card } from "./Card";
 import { Heap } from "collections/heap"
-class Hand {
+export class Hand {
     private cards:Map<number,Card>;
     private freeKeys:Heap<number>;
     constructor() 
@@ -31,6 +31,11 @@ class Hand {
         let sum=0;
         this.cards.forEach((value)=>{sum+=value.val;})
         return sum;
+    }
+
+    public getNumOfCards():number
+    {
+        return this.cards.size;
     }
     
 }
