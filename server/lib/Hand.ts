@@ -1,11 +1,11 @@
 import { Card } from "./Card";
-import { Heap } from "collections/heap"
+var  Heap = require( "collections/heap");
 export class Hand {
     private cards:Map<number,Card>;
-    private freeKeys:Heap<number>;
+    private freeKeys:any;//Heap
     constructor() 
     {
-        this.freeKeys=new Heap([...Array(10).keys()],null,(a,b)=> {return b-a;})
+        this.freeKeys=new Heap([...Array(10).keys()],null,(a:number,b:number)=> {return b-a;})
         this.cards=new Map<number,Card>()
     }
 
@@ -24,7 +24,7 @@ export class Hand {
     {
         if(!this.cards.has(key))
             throw "This Hand don't have a card in index "+key;
-        return this.cards[key];
+        return this.cards.get(key);
     }
 
     public get val() :number {
@@ -36,6 +36,14 @@ export class Hand {
     public getNumOfCards():number
     {
         return this.cards.size;
+    }
+
+    public toString() :string {
+        let str:string="";
+        this.cards.forEach((value)=>{
+            str+=value+ " ";
+        });
+        return str;
     }
     
 }
