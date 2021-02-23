@@ -21,8 +21,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
     //let main:string = document.getElementById(id);
     let mainHeight: number = this.container.nativeElement.offsetHeight;
     let mainWidth: number = this.container.nativeElement.offsetWidth;
-    console.log("hei = " + mainHeight );
-    console.log("wid = " + mainWidth );
+    // console.log("hei = " + mainHeight );
+    // console.log("wid = " + mainWidth );
     let circleArray: HTMLElement[] = [];
     for (var i = 0; i < num_of_players; i++) {
       let circle:HTMLElement= this.renderer.createElement('div');
@@ -32,10 +32,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
       circle.className = 'circle number' + i;
       circleArray.push(circle);
       circleArray[i].style.position = "absolute";
-      circleArray[i].style.top = ((mainHeight / 2) - parseInt(circleArray[i].getAttribute("posX").slice(0, -2)) - 100 ) + 'px'; //100 should be the dig height/2
-      circleArray[i].style.left = ((mainWidth / 2) + parseInt(circleArray[i].getAttribute("posY").slice(0, -2))) + 'px';
+      circleArray[i].style.top = (((mainHeight / 2) - parseInt(circleArray[i].getAttribute("posX").slice(0, -2)) - 100 )/mainHeight*100).toPrecision(4) + '%'; //100 should be the dig height/2
+      circleArray[i].style.left = (((mainWidth / 2)*.7 + parseInt(circleArray[i].getAttribute("posY").slice(0, -2)))/mainWidth*70).toPrecision(4) + '%';
       circleArray[i].style.transform = "rotate(" + ( i * (360 / num_of_players)) + "deg)";
-      circleArray[i].style
+      //circleArray[i].style
     }
   };
 
