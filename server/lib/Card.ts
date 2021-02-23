@@ -23,16 +23,16 @@ export enum RANK {
     JOKER,
 }
 
-export class CardInterface extends Schema { // both Card and Joker extends this class
+export class Card{ // both NormalCard and Joker extends this class
     private imagePath: string = "";
-    constructor(private _rank:RANK)
-    { super()  }
+    constructor(private _rank:RANK){}
+//    { super()  }
     public get rank():RANK { return this._rank };
     
     public get val():number { return this.rank.valueOf(); }
 }
 
-export class Card extends CardInterface{
+export class NormalCard extends Card{
     constructor(card_number: RANK, private card_suit :SUIT) {
         super(card_number);
         if(this.rank===RANK.JOKER)
@@ -91,7 +91,7 @@ export class Card extends CardInterface{
     
     }
 }
-export class Joker extends CardInterface{
+export class Joker extends Card{
     constructor()
     {
         super(RANK.JOKER);
