@@ -23,10 +23,10 @@ export enum RANK {
     JOKER,
 }
 
-export class Card{ // both NormalCard and Joker extends this class
+export class Card extends Schema{ // both NormalCard and Joker extends this class
     private imagePath: string = "";
-    constructor(private _rank:RANK){}
-//    { super()  }
+    constructor(private _rank:RANK)
+    { super()  }
     public get rank():RANK { return this._rank };
     
     public get val():number { return this.rank.valueOf(); }
