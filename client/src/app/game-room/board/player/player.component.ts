@@ -26,24 +26,6 @@ export class PlayerComponent implements  AfterViewInit {
       this.container.nativeElement.style.top = this.data[0];
       this.container.nativeElement.style.left = this.data[1];
       this.container.nativeElement.style.transform = this.data[2];
-
-
-    //let placeholder:HTMLElement = this.renderer.createElement('div');
-    //this.renderer.appendChild(this.elRef.nativeElement,placeholder);
-      // console.log( this.data );
-      //this.cdr.detectChanges();
-  //     //placeholder.className = 'placeholder number' + i;
-  //     console.log(this.data);// + this.data[0] + this.data[1] + this.data[2])
-  //     placeholder.style.position = "absolute";
-  //     placeholder.style.top = this.data[0]; //100 should be the dig height/2
-  //     placeholder.style.left = this.data[1];
-  //     placeholder.style.transform = this.data[2];
-      // placeholder.style.position = "absolute";
-      // placeholder.style.width = "300px";
-      // placeholder.style.height = "200px";
-      // placeholder.style.border = "2px solid black";
-      // let txt: HTMLElement = this.renderer.createText("YARRR");
-      // this.renderer.appendChild( placeholder, txt );
   }
 
 }

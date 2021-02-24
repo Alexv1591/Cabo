@@ -21,22 +21,10 @@ export class BoardComponent implements OnInit, AfterContentInit, AfterViewInit {
   private setup(num_of_players: number, radius: number) {
     let mainHeight: number = this.host.nativeElement.offsetHeight;
     let mainWidth: number = this.host.nativeElement.offsetWidth;
-    //let placeholderArray: HTMLElement[] = [];
     for (var i = 0; i < num_of_players; i++) {
       let data:string[];
       let initX:number = Math.round(radius * (Math.cos(this.placement_angles[i]))),
           initY:number = Math.round(radius * (Math.sin(this.placement_angles[i])));
-      //let placeholder:HTMLElement= this.renderer.createElement('div');
-        // this.renderer.appendChild(this.host.nativeElement,placeholder);
-      // placeholder.setAttribute("posX",Math.round(radius * (Math.cos(this.placement_angles[i]))) + 'px');
-      // placeholder.setAttribute("posY",Math.round(radius * (Math.sin(this.placement_angles[i]))) + 'px');
-      // placeholder.className = 'placeholder number' + i;
-      // placeholderArray.push(placeholder);
-      // placeholderArray[i].style.position = "absolute";
-      // placeholderArray[i].style.top = (((mainHeight / 2) - initX - 100 )/mainHeight*100).toPrecision(4) + '%'; //100 should be the dig height/2
-      // placeholderArray[i].style.left = (((mainWidth / 2)*.7 + initY)/mainWidth*70).toPrecision(4) + '%';
-      // placeholderArray[i].style.transform = "rotate(" + ( i * (360 / num_of_players)) + "deg)";
-
       let topp:string = (((mainHeight / 2) - initX - 100 )/mainHeight*100).toPrecision(4) + '%',
           leftp:string = (((mainWidth / 2)*.7 + initY)/mainWidth*70).toPrecision(4) + '%',
           rotation:string = "rotate(" + ( i * (360 / num_of_players)) + "deg)";
