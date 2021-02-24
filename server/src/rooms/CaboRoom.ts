@@ -4,7 +4,7 @@ import { CaboState } from "./State/CaboState";
 
 export class CaboRoom extends Room {
 
-  //private turns:number=0;
+  private turns:number=0;
   onCreate(options: any) {
     this.setState(new CaboState(options.AI));
     this.maxClients = options.players - options.AI;
@@ -35,15 +35,20 @@ export class CaboRoom extends Room {
       console.log(client.id+" "+message)
     });
 
-    // this.onMessage("nextTurn",(client, message) => {
-    //   if(this.turns>4)
-    //     this.broadcast("GameOver",{});
-    //   else{
-    //     this.turns++;
-    //     this.state.currentTurn=(this.state.currentTurn+1)%this.state.numOfPlayers;
-    //     this.state.players.get(this.state.currentTurn.toString()).client.send("my-turn",{});
-    //   }
-    // });
+    this.onMessage("nextTurn",(client, message) => {
+      if(this.turns>=4)
+        this.broadcast("GameOver",{});
+      else{
+        this.state.currentTurn=((parseInt(this.state.currentTurn)+1)%this.state.numOfPlayers).toString();
+        this.notifyCurrentPlayer();
+      }
+    });
+  }
+
+  private notifyCurrentPlayer(){
+    console.log("turns:" +this.turns+" next trun "+this.state.currentTurn);
+    this.state.players.get(this.state.currentTurn).client.send("my-turn",{});
+    this.turns++;
   }
 
   private gameStart() {
@@ -63,6 +68,7 @@ export class CaboRoom extends Room {
     }
 
     this.state.currentTurn=this.getRandomInt(this.state.numOfPlayers).toString();
+    this.notifyCurrentPlayer();
   }
 
   private getRandomInt(max:number) {
