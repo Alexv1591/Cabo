@@ -4,7 +4,7 @@ import cors from "cors";
 import { Server } from "colyseus";
 import { monitor } from "@colyseus/monitor";
 
-import { MyRoom } from "./rooms/MyRoom";
+import { CaboRoom } from "./rooms/CaboRoom";
 
 const port = Number(process.env.PORT || 3000);
 const app = express()
@@ -18,7 +18,7 @@ const gameServer = new Server({
 });
 
 // register your room handlers
-gameServer.define('my_room', MyRoom);
+gameServer.define('cabo_room', CaboRoom);
 
 /**
  * Register @colyseus/social routes

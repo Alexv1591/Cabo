@@ -13,7 +13,7 @@ export class CaboState extends Schema {
   players:MapSchema<Player>=new MapSchema<Player>();
 
   @type("number")
-  numOfPlayer:number;
+  numOfPlayers:number;
 
   @type([Card])
   discard_pile:ArraySchema<Card> =new ArraySchema<Card>();
@@ -21,5 +21,8 @@ export class CaboState extends Schema {
   @type(CardPack)
   pack:CardPack=new CardPack();
 
-
+  constructor(numOfPlayers:number){
+    super();
+    this.numOfPlayers=numOfPlayers;
+  }
 }
