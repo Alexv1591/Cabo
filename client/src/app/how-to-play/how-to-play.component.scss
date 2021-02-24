@@ -1,0 +1,43 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Potta+One&family=Amatic+SC&family=Lobster&family=Emilys+Candy&family=Caveat:wght@700&display=swap');
+
+:host{
+    height: 100%;
+    width: 100%;
+}
+
+#container{
+    height: 100%;
+    padding: auto;
+}
+
+.card{
+    opacity: 0.9;
+    box-shadow: rgb(27, 27, 27) -30px 50px 25px 20px;
+    border: 1.5px inset rgba(0, 0, 0, 0.85);
+    border-radius: 80px 30px !important;
+    background-color: white;
+    transition: box-shadow 0.3s;
+    &:hover {
+        box-shadow: rgb(27, 27, 27) -25px 40px 30px 23px;
+        transition: box-shadow 0.4s;
+    }
+}
+
+.header{
+    font-size: 2.5em;
+    text-align: right;
+    p{
+        padding-right: 1em;
+        color: black;
+    }
+}
+
+.card-body{
+    position: relative;
+    top: 40%;
+}
+
+p{  
+    color: black;
+}

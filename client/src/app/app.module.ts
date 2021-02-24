@@ -1,20 +1,21 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BoardComponent } from './board/board.component';
-import { ChatComponent } from './chat/chat.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { GameRoomModule } from './game-room/game-room.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    BoardComponent,
-    ChatComponent
+    routingComponents
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgbModule,
+    GameRoomModule
   ],
   providers: [],
   bootstrap: [AppComponent]
