@@ -14,6 +14,10 @@ export class Player extends Schema{
         this.hand=new Hand();
     }
 
+    public get client(){
+        return this.serverClient;
+    }
+
     public addCard(card:Card) : void{
         this.hand.addCard(card);
     }
@@ -33,4 +37,9 @@ export class Player extends Schema{
     {
         return this.hand.val;
     }
+
+    public toString() :string {
+        return this.serverClient.sessionId+": "+this.hand.toString();
+    }
+
 }

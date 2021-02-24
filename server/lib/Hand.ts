@@ -39,11 +39,11 @@ export class Hand {
     }
 
     public toString() :string {
-        let str:string="";
+        let str:string="[";
         this.cards.forEach((value)=>{
             str+=value+ " ";
         });
-        return str;
+        return str+']';
     }
     
 }
