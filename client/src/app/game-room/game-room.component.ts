@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Client } from 'colyseus.js';
+import { Client, Room } from 'colyseus.js';
+
 
 @Component({
   selector: 'game-room',
@@ -7,18 +8,34 @@ import { Client } from 'colyseus.js';
   styleUrls: ['./game-room.component.scss']
 })
 export class GameRoomComponent implements OnInit {
-
-  constructor() { }
+  private room:Room;
+  constructor() { 
+    //this.createClient();
+  }
 
   ngOnInit(): void {
-    const client=new Client('ws://localhost:3000')
-    // try {
-    //   const room =client.joinOrCreate("my_room", {/* options */});
-    //   console.log("joined successfully", room);
-    
-    // } catch (e) {
-    //   console.error("join error", e);
-    // }
+    this.createClient();
   }
+    
+  private async createClient(){
+    const client= new Client('ws://localhost:3000')
+    let i=0;
+    try {
+      this.room= await client.joinOrCreate("cabo_room", {players:2,AI:0});//.then((room:Room)=>{console.log("joined successfully to "+room.id);});
+      
+      this.room.onMessage("my-turn",(message) => {
+        i++;
+        console.log("it's my turn "+i);
+          this.room.send("nextTurn",{});
+      });
+      this.room.onMessage("GameOver",(message)=>{
+        console.log("GameOver");
+      });
+    
+    } catch (e) {
+      console.error("join error", e);
+    }
+  }
+
 
 }
