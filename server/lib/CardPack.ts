@@ -1,13 +1,13 @@
-import { Schema } from "@colyseus/schema";
+import { Schema , ArraySchema,type} from "@colyseus/schema";
 import {SUIT,RANK,Card,NormalCard,Joker} from "./Card"
 export class CardPack extends Schema
 { 
-    private deck:Array<Card>;
+    @type([Card])
+    deck:ArraySchema<Card> =new ArraySchema<Card>();
 
     constructor()
     {
         super();
-        this.deck = new Array<Card>();
         this.createDeck();
         this.shuffle();
     }
