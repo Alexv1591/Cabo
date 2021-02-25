@@ -8,7 +8,13 @@
 #container{
     float: none;
     height: 100%;
-    width: 100%;
+    width: 88%;
+    margin: 3%;
+    border-radius: 50%;
+    border: 0.5px solid rgb(27, 27, 27);
+    box-shadow: rgb(27, 27, 27) 28px 28px 28px 28px;
+    transition: box-shadow 1s;
+
 }
 
 div.placeholder {
