@@ -1,4 +1,5 @@
 import { Room, Client } from "colyseus";
+import { Card } from "../../lib/Card";
 import { Player } from "../../lib/Player";
 import { CaboState } from "./State/CaboState";
 
@@ -29,20 +30,40 @@ export class CaboRoom extends Room {
   onDispose() {
   }
 
-  private loadMassageListener()
-  {
+  private loadMassageListener() {
+
     this.onMessage("type", (client, message) => {
       console.log(client.id+" "+message)
     });
 
     this.onMessage("nextTurn",(client, message) => {
-      if(this.turns>=4)
+      if(this.turns>=4){
         this.broadcast("GameOver",{});
+        this.logDiscardPile();
+      }
       else{
         this.state.currentTurn=((parseInt(this.state.currentTurn)+1)%this.state.numOfPlayers).toString();
         this.notifyCurrentPlayer();
       }
     });
+
+    this.onMessage("draw-card",(client, card:string)=>{
+      card=this.state.pack.draw().toString();
+      console.log(client.id+" draw " +card);
+    });
+
+    this.onMessage("to_discard",(client, card) => {
+      console.log(card+" added to discard pile");
+      this.state.discard_pile.push(card);
+    });
+
+  }
+
+  private logDiscardPile() {
+    let str = "[";
+    this.state.discard_pile.forEach((card: Card) => { str += " " + card; });
+    str += "]";
+    console.log(str);
   }
 
   private notifyCurrentPlayer(){
