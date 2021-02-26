@@ -5,13 +5,15 @@ import { MenuRoutingModule } from './menu-routing.module';
 import { MenuComponent } from './menu.component';
 import { NewGameComponent } from './new-game/new-game.component';
 import { HowToPlayComponent } from './how-to-play/how-to-play.component';
+import { MainMenuComponent } from './main-menu/main-menu.component';
 
 
 @NgModule({
   declarations: [
     MenuComponent,
     NewGameComponent,
-    HowToPlayComponent
+    HowToPlayComponent,
+    MainMenuComponent
   ],
   imports: [
     CommonModule,

@@ -16,5 +16,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class MenuRoutingModule { }
-
-export const menuRoutingComponents = [ NewGameComponent ];

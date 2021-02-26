@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-how-to-play',
@@ -6,10 +6,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./how-to-play.component.scss']
 })
 export class HowToPlayComponent implements OnInit {
+  
+  @Output()  public choice:EventEmitter<string> = new EventEmitter();
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit(): void { }
+
+  back(buttonClicked:string): void {
+    this.choice.next( buttonClicked );
   }
 
 }

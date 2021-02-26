@@ -1,18 +1,8 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Potta+One&family=Amatic+SC&family=Lobster&family=Emilys+Candy&family=Caveat:wght@700&display=swap');
-
 :host{
     height: 100%;
     width: 100%;
 }
-
-h5{
-    color: rgba(0, 0, 0, 0.9);
-    font-size: 2.5em;
-    font-family: 'Potta One', cursive;
-}
-
-span{font-family: 'Emilys Candy', cursive;}
 
 #container{
     height: 100%;
@@ -21,6 +11,7 @@ span{font-family: 'Emilys Candy', cursive;}
 
 .card{
     opacity: 0.9;
+    padding: 1.5em;
     border-radius: 30px 80px !important;
     box-shadow: rgb(27, 27, 27) -30px 50px 25px 20px;
     border: 1.5px inset rgba(0, 0, 0, 0.85);
@@ -35,43 +26,4 @@ span{font-family: 'Emilys Candy', cursive;}
 .card-body{
     position: relative;
     top: 50%;
-}
-
-
-button{
-    margin: 5px;
-    width: 50%;
-    font-family: 'Amatic SC', cursive;
-    font-size: 2em;
-}
-
-.left{
-    color: red;
-    margin-left: .5em;
-    margin-top: .5em;
-    font-size: 4em;
-    line-height: 0.9em;
-}
-
-.right{
-    margin-right: .5em;
-    margin-bottom: .5em;
-    font-size: 4em;
-    text-align: left !important;
-    line-height: 0.9em;
-}
-
-.rotated{
-    transform: rotate(180deg);
-}
-
-@keyframes raise{
-    0%{
-        box-shadow: rgb(27, 27, 27) -50px 70px 30px -10px;
-        border: 1.5px inset rgba(0, 0, 0, 0.85);
-    }
-    100%{
-        border: 1.5px inset rgba(0, 0, 0, 0.85);
-        box-shadow: rgb(27, 27, 27) -40px 60px 25px -8px;
-    }
 }
