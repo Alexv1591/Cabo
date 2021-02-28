@@ -43,14 +43,14 @@ export class CaboRoom extends Room {
       else{
         console.log("GameOver");
         this.broadcast("GameOver",{});
-        //this.logDiscardPile();
+        this.logDiscardPile();
       }
     });
 
-    // this.onMessage("to_discard",(client, card) => {
-    //   console.log(card+" added to discard pile");
-    //   //this.state.discard_pile.push(card);
-    // });
+    this.onMessage("to_discard",(client, message) => {
+      this.state.discard_pile.push(message.card);
+      console.log(message.card+" added to discard pile");
+    });
 
     this.onMessage("draw-card",(client,message)=>{
       if(this.getCurrentTurnId()==client.sessionId){
@@ -60,9 +60,25 @@ export class CaboRoom extends Room {
       }
       else
         client.send("drawn-card","!");
-    })
+    });
+
+    // this.onMessage("get-card",(client,message)=>{
+    //   let playersArray=
+    //   if(!this.state.players.values.has(message.player))
+    //     throw message.player +" is not a player in this game"
+    //   let card=this.state.players.get(message.player).getCard(message.index);
+    //   client.send("get-card",card.image);
+    // });
 
   }
+
+  // private getClientById(id:string) :Client{
+  //   let playersArray=Array.from(this.state.players.values()).map((player:any)=>player=player.client);
+  //   console.log(playersArray)
+  //   if(playersArray.includes())
+
+    
+  // }
 
   private logDiscardPile() {
     let str = "[";
@@ -86,6 +102,7 @@ export class CaboRoom extends Room {
     for (let player of this.state.players.values()) {
       console.log(player+"")
     }
+    this.sendPlayers()
     this.currentTurnIndex=this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
     this.initPlayerTurn();
   }
@@ -95,6 +112,17 @@ export class CaboRoom extends Room {
     this.state.currentTurn=this.getCurrentTurnId();
     console.log("turns: "+this.turns+" player: "+this.state.currentTurn);
     this.state.players.get(this.currentTurnIndex.toString()).client.send("my-turn",);
+  }
+
+  private sendPlayers()
+  {
+    let playersId=Array.from(this.state.players.values())//.map((player:any)=>{player.client.sessionId;});
+    playersId=playersId.map((value:any)=>value.client.sessionId);
+    for(let player of this.state.players.values()){
+      player.client.send("players",playersId);
+      let val=playersId.shift();
+      playersId.push(val);
+    }
   }
 
   private getCurrentTurnId(): any {
