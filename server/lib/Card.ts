@@ -1,4 +1,4 @@
-import { Schema } from "@colyseus/schema";
+import { Schema , type } from "@colyseus/schema";
 
 export enum SUIT {
     HEART = 'Heart',
@@ -24,12 +24,19 @@ export enum RANK {
 }
 
 export class Card extends Schema{ // both NormalCard and Joker extends this class
-    private imagePath: string = "";
+    //@type("string")
+    imagePath: string = "";
     constructor(private _rank:RANK)
     { super()  }
     public get rank():RANK { return this._rank };
     
     public get val():number { return this.rank.valueOf(); }
+
+    protected set img(imagePath:string){ this.imagePath=imagePath; }
+
+    public get image(){ return this.imagePath; }
+    
+    //TO DO - add static method to create Card from image path
 }
 
 export class NormalCard extends Card{
@@ -37,7 +44,7 @@ export class NormalCard extends Card{
         super(card_number);
         if(this.rank===RANK.JOKER)
             throw "Joker is'nt a regular card. It has a class for its own"
-        //super.imagePath = "cards/" + card_suit + (this.card_number>10)?transformPipNumToLetter(this.card_number):this.card_number + ".png";
+        super.img = this.toString();
     }
 
     public get suit() :SUIT { return this.card_suit; }
@@ -50,8 +57,6 @@ export class NormalCard extends Card{
         return super.val;
         
     }
-
-//    public get img() : string {return this.imagePath}
 
     public toString() {
         return this.rankNumToLetter() + this.suitToSymbol();
@@ -96,6 +101,7 @@ export class Joker extends Card{
     {
         super(RANK.JOKER);
         //add img path
+        super.img = this.toString();
     }
 
     public get val()
