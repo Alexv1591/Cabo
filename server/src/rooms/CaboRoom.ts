@@ -4,8 +4,11 @@ import { Player } from "../../lib/Player";
 import { CaboState } from "./State/CaboState";
 
 export class CaboRoom extends Room {
-
+  private currentTurnIndex:number;
   private turns:number=0;
+  constructor(){
+    super();
+  }
   onCreate(options: any) {
     this.setState(new CaboState(options.AI));
     this.maxClients = options.players - options.AI;
@@ -15,7 +18,7 @@ export class CaboRoom extends Room {
   }
 
   onJoin(client: Client, options: any) {
-    this.state.players.set((this.state.numOfPlayers++).toString(), new Player(client));
+    this.state.players.set((this.state.num_of_players++).toString(), new Player(client));
     console.log(client.id + " joined successfully to "+this.roomId);
     if (!this.gameStart())
       return;
@@ -30,32 +33,34 @@ export class CaboRoom extends Room {
   onDispose() {
   }
 
-  private loadMassageListener() {
-
-    this.onMessage("type", (client, message) => {
-      console.log(client.id+" "+message)
-    });
+  private async loadMassageListener() {
 
     this.onMessage("nextTurn",(client, message) => {
-      if(this.turns>=4){
-        this.broadcast("GameOver",{});
-        this.logDiscardPile();
+      if(this.turns<4){
+        this.currentTurnIndex=((this.currentTurnIndex+1)%this.state.num_of_players);
+        this.initPlayerTurn();
       }
       else{
-        this.state.currentTurn=((parseInt(this.state.currentTurn)+1)%this.state.numOfPlayers).toString();
-        this.notifyCurrentPlayer();
+        console.log("GameOver");
+        this.broadcast("GameOver",{});
+        //this.logDiscardPile();
       }
     });
 
-    this.onMessage("draw-card",(client, card:string)=>{
-      card=this.state.pack.draw().toString();
-      console.log(client.id+" draw " +card);
-    });
+    // this.onMessage("to_discard",(client, card) => {
+    //   console.log(card+" added to discard pile");
+    //   //this.state.discard_pile.push(card);
+    // });
 
-    this.onMessage("to_discard",(client, card) => {
-      console.log(card+" added to discard pile");
-      this.state.discard_pile.push(card);
-    });
+    this.onMessage("draw-card",(client,message)=>{
+      if(this.getCurrentTurnId()==client.sessionId){
+        let img=this.state.pack.draw().image;
+        console.log(client.sessionId+" draw "+ img); 
+        client.send("drawn-card",img);
+      }
+      else
+        client.send("drawn-card","!");
+    })
 
   }
 
@@ -64,12 +69,6 @@ export class CaboRoom extends Room {
     this.state.discard_pile.forEach((card: Card) => { str += " " + card; });
     str += "]";
     console.log(str);
-  }
-
-  private notifyCurrentPlayer(){
-    console.log("turns:" +this.turns+" next trun "+this.state.currentTurn);
-    this.state.players.get(this.state.currentTurn).client.send("my-turn",{});
-    this.turns++;
   }
 
   private gameStart() {
@@ -87,9 +86,19 @@ export class CaboRoom extends Room {
     for (let player of this.state.players.values()) {
       console.log(player+"")
     }
+    this.currentTurnIndex=this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
+    this.initPlayerTurn();
+  }
 
-    this.state.currentTurn=this.getRandomInt(this.state.numOfPlayers).toString();
-    this.notifyCurrentPlayer();
+  private initPlayerTurn(){
+    this.turns++;
+    this.state.currentTurn=this.getCurrentTurnId();
+    console.log("turns: "+this.turns+" player: "+this.state.currentTurn);
+    this.state.players.get(this.currentTurnIndex.toString()).client.send("my-turn",);
+  }
+
+  private getCurrentTurnId(): any {
+    return this.state.players.get(this.currentTurnIndex.toString()).client.id;
   }
 
   private getRandomInt(max:number) {
