@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Client, Room } from 'colyseus.js';
-
+import { RoomService } from './services/room.service';
 
 @Component({
   selector: 'game-room',
@@ -8,34 +7,32 @@ import { Client, Room } from 'colyseus.js';
   styleUrls: ['./game-room.component.scss']
 })
 export class GameRoomComponent implements OnInit {
-  private room:Room;
-  constructor() { 
-    //this.createClient();
-  }
+  constructor(private room_service: RoomService) { }
 
   ngOnInit(): void {
-    this.createClient();
-  }
-    
-  private async createClient(){
-    const client= new Client('ws://localhost:3000')
-    let i=0;
-    try {
-      this.room= await client.joinOrCreate("cabo_room", {players:2,AI:0});//.then((room:Room)=>{console.log("joined successfully to "+room.id);});
-      
-      this.room.onMessage("my-turn",(message) => {
-        i++;
-        console.log("it's my turn "+i);
-          this.room.send("nextTurn",{});
-      });
-      this.room.onMessage("GameOver",(message)=>{
-        console.log("GameOver");
-      });
-    
-    } catch (e) {
-      console.error("join error", e);
-    }
+    this.room_service.createClient();
+    this.createRoom();
   }
 
+  private async createRoom() {
+    let room = await this.room_service.joinRoom();
+    this.loadMassages();
+  }
 
+  private async loadMassages() {
+    this.room_service.room.onMessage("my-turn", (message) => {
+      this.playerTurn();
+    });
+    this.room_service.room.onMessage("GameOver", (message) => {
+      console.log("GameOver");
+    });
+  }
+
+  private async playerTurn(){
+    console.log("it's my turn");
+    let a:any;
+    a=await this.room_service.drawCard();
+    console.log(this.room_service.room.sessionId+" draw "+a);
+    this.room_service.nextTurn(); 
+  }
 }
