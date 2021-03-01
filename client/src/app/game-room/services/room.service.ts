@@ -10,7 +10,9 @@ const TO_MUCH_TIME:number=3125;
 export class RoomService {
   private _room:Room;
   private _client:Client;
-  private serverMsg:any;
+  private serverMsg:any; 
+  public players:Array<String>;
+
 
   constructor() { }
 
@@ -36,16 +38,20 @@ export class RoomService {
   public async createRoom(options:any):Promise<Room>{
     try {
       this._room = await this._client.create("cabo_room", options);
+      this.loadMassages();
       return this.room;
     } catch (e) {
       throw "Something bad happened while we were trying to create a room." ;
     }
-    this.loadMassages();
   }
 
   private async loadMassages()
   {
     this.room.onMessage("drawn-card",(card)=>{this.serverMsg=card;});
+
+    this.room.onMessage("get-card",(card)=>{this.serverMsg=card;});
+
+    this.room.onMessage("players", (players:Array<string>)=>this.players=players);
   }
 
   public async nextTurn(){
@@ -72,5 +78,12 @@ export class RoomService {
       this.waitForServerMessage(5,resolve,rejects);
     });
   }
+
+  public async discardCard(cardPath:string){
+    this.room.send("to_discard",{card:cardPath});
+  }
+
+  //public async
+
 
 }
