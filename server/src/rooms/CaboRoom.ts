@@ -43,7 +43,7 @@ export class CaboRoom extends Room {
       else{
         console.log("GameOver");
         this.broadcast("GameOver",{});
-        this.logDiscardPile();
+        //this.logDiscardPile();
       }
     });
 
