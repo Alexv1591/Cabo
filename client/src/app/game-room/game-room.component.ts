@@ -3,7 +3,10 @@ import { RoomService } from './services/room.service';
 
 @Component({
   selector: 'game-room',
-  templateUrl: './game-room.component.html',
+  template: `
+              <app-board></app-board>
+              <app-chat></app-chat>
+  `,
   styleUrls: ['./game-room.component.scss']
 })
 export class GameRoomComponent implements OnInit {

@@ -1,0 +1,37 @@
+<div class="header">
+    <span class="back" (click)="back('back')">&laquo;</span>
+</div>
+
+<div class="row">
+    <h2 style="font-size: 2.3em;" class="align-self-center">Start a new game</h2>
+</div>
+<div class="row">
+    <h2 style="font-size: 1.5em;">with up to four other players</h2>
+</div>
+<div class="row"><br></div>
+<div class="row">
+    <div class="col">
+        <span (click)="playerClicked('-1')" class="btn btn-outline-success">-</span>
+    </div>
+    <div class="col">
+        <h3><b>Players:</b> {{playerCount}}</h3>
+    </div>
+    <div class="col">
+        <span (click)="playerClicked('1')" class="btn btn-outline-success">+</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <span (click)="botClicked('-1')" class="btn btn-outline-success">-</span>
+    </div>
+    <div class="col">
+        <h3><b>AI: </b>{{botCount}}</h3>
+    </div>
+    <div class="col">
+        <span (click)="botClicked('1')" class="btn btn-outline-success">+</span>
+    </div>
+</div>
+
+<div class="footer">
+    <span (click)="startClicked()">Start</span>
+</div>

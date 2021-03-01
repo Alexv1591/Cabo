@@ -5,13 +5,17 @@ import { GameRoomRoutingModule } from './game-room-routing.module';
 import { BoardComponent } from './board/board.component';
 import { ChatComponent } from './chat/chat.component';
 import { GameRoomComponent } from './game-room.component';
+import { PlayerComponent } from './board/player/player.component';
+import { CardComponent } from './board/card/card.component';
 
 
 @NgModule({
   declarations: [
     BoardComponent,
     ChatComponent,
-    GameRoomComponent
+    GameRoomComponent,
+    PlayerComponent,
+    CardComponent
   ],
   imports: [
     CommonModule,
@@ -19,6 +23,7 @@ import { GameRoomComponent } from './game-room.component';
   ],
   exports: [
     GameRoomComponent
-  ]
+  ],
+  entryComponents: [PlayerComponent, CardComponent]
 })
 export class GameRoomModule { }
