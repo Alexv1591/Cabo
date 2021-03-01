@@ -14,8 +14,8 @@ export class CaboState extends Schema {
   @type("number")
   num_of_players:number;
 
-  @type([Card])
-  discard_pile:ArraySchema<Card>;
+  @type(["string"])
+  discard_pile:ArraySchema<string>=new ArraySchema<string>();
   
   @type(CardPack)
   pack:CardPack=new CardPack();

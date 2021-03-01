@@ -62,13 +62,13 @@ export class CaboRoom extends Room {
         client.send("drawn-card","!");
     });
 
-    // this.onMessage("get-card",(client,message)=>{
-    //   let playersArray=
-    //   if(!this.state.players.values.has(message.player))
-    //     throw message.player +" is not a player in this game"
-    //   let card=this.state.players.get(message.player).getCard(message.index);
-    //   client.send("get-card",card.image);
-    // });
+    this.onMessage("get-card",(client,message)=>{
+      let player:Player=<Player>Array.from(this.state.players.values()).find((player:any)=>{return player.client.sessionId==message.player;});
+      if(typeof player==="undefined")
+        throw message.player +" is not a player in this game";
+      let card=player.getCard(message.index);
+      client.send("get-card",card.image);
+    });
 
   }
 

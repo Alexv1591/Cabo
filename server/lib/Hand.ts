@@ -5,7 +5,7 @@ export class Hand {
     private freeKeys:any;//Heap
     constructor() 
     {
-        this.freeKeys=new Heap([...Array(10).keys()],null,(a:number,b:number)=> {return b-a;})
+        this.freeKeys=new Heap([...Array(8).keys()],null,(a:number,b:number)=> {return b-a;})
         this.cards=new Map<number,Card>()
     }
 
