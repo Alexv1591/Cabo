@@ -26,13 +26,14 @@ export class GameRoomComponent implements OnInit {
     this.room_service.room.onMessage("GameOver", (message) => {
       console.log("GameOver");
     });
+
   }
 
   private async playerTurn(){
     console.log("it's my turn");
-    let a:any;
-    a=await this.room_service.drawCard();
-    console.log(this.room_service.room.sessionId+" draw "+a);
+    let cardPath:any=await this.room_service.drawCard();
+    console.log(this.room_service.room.sessionId+" draw "+cardPath);
+    this.room_service.discardCard(cardPath);
     this.room_service.nextTurn(); 
   }
 }
