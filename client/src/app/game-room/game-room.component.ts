@@ -7,6 +7,7 @@ import { RoomService } from './services/room.service';
   styleUrls: ['./game-room.component.scss']
 })
 export class GameRoomComponent implements OnInit {
+  private i:number=0;
   constructor(private room_service: RoomService) { }
 
   ngOnInit(): void {
@@ -15,7 +16,7 @@ export class GameRoomComponent implements OnInit {
   }
 
   private async createRoom() {
-    let room = await this.room_service.joinRoom();
+    let room = await this.room_service.joinOrCreate();
     this.loadMassages();
   }
 
@@ -31,9 +32,8 @@ export class GameRoomComponent implements OnInit {
 
   private async playerTurn(){
     console.log("it's my turn");
-    let cardPath:any=await this.room_service.drawCard();
-    console.log(this.room_service.room.sessionId+" draw "+cardPath);
-    this.room_service.discardCard(cardPath);
+
+    
     this.room_service.nextTurn(); 
   }
 }
