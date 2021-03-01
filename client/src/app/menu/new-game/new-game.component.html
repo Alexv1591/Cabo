@@ -2,21 +2,33 @@
     <span class="back" (click)="back('back')">&laquo;</span>
 </div>
 
-<h2 class="align-self-center">Start a new game</h2>
-
 <div class="row">
-    <div class="col-sm">
-        <button (click)="playerClicked('1')" type="button" class="btn btn-outline-success">+</button>
-        <h2>with {{playerCount}} players</h2>
-        <button (click)="playerClicked('-1')" type="button" class="btn btn-outline-success">-</button>
+    <h2 style="font-size: 2.3em;" class="align-self-center">Start a new game</h2>
+</div>
+<div class="row">
+    <h2 style="font-size: 1.5em;">with up to four other players</h2>
+</div>
+<div class="row"><br></div>
+<div class="row">
+    <div class="col">
+        <span (click)="playerClicked('-1')" class="btn btn-outline-success">-</span>
     </div>
-    <div class="col- align-self-center">
-        <h2>&</h2>
+    <div class="col">
+        <h3><b>Players:</b> {{playerCount}}</h3>
     </div>
-    <div class="col-sm">
-        <button (click)="botClicked('1')" type="button" class="btn btn-outline-success">+</button>
-        <h2>with {{botCount}} bots</h2>
-        <button (click)="botClicked('-1')" type="button" class="btn btn-outline-success">-</button>
+    <div class="col">
+        <span (click)="playerClicked('1')" class="btn btn-outline-success">+</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <span (click)="botClicked('-1')" class="btn btn-outline-success">-</span>
+    </div>
+    <div class="col">
+        <h3><b>AI: </b>{{botCount}}</h3>
+    </div>
+    <div class="col">
+        <span (click)="botClicked('1')" class="btn btn-outline-success">+</span>
     </div>
 </div>
 
