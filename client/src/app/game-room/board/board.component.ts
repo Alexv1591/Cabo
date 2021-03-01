@@ -7,7 +7,7 @@ import { PlayerComponent } from './player/player.component';
   styleUrls: ['./board.component.scss']
 })
 
-export class BoardComponent implements OnInit, AfterContentInit, AfterViewInit {
+export class BoardComponent implements OnInit, AfterViewInit {
 
   @ViewChild( 'container', {read: ViewContainerRef} ) container: ViewContainerRef;
   private player_count: number;
@@ -47,8 +47,6 @@ export class BoardComponent implements OnInit, AfterContentInit, AfterViewInit {
   }
 
   ngOnInit(): void { }
-
-  ngAfterContentInit(): void {  }
 
   ngAfterViewInit():void {
     setTimeout( () => {
