@@ -14,8 +14,10 @@ export class BoardComponent implements OnInit, AfterContentInit, AfterViewInit {
   private placement_angles: number[];
 
   constructor(private resolver: ComponentFactoryResolver, private host:ElementRef) {
+    console.log( history.state.data );
+    console.log( history.state.data.pc+history.state.data.bc );
     this.placement_angles = new Array<number>();
-    this.player_count = 5;
+    this.player_count = history.state.data.pc+history.state.data.bc+1;
   }
 
   private setup(num_of_players: number, radius: number) {

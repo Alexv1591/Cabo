@@ -1,0 +1,31 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Potta+One&family=Amatic+SC&family=Lobster&family=Emilys+Candy&family=Caveat:wght@700&display=swap');
+
+h5{
+    color: rgba(0, 0, 0, 0.9);
+    font-size: 2.5em;
+    font-family: 'Potta One', cursive;
+}
+
+span{font-family: 'Emilys Candy', cursive;}
+
+.rotated{ transform: rotate(180deg); }
+
+button{
+    margin: 5px;
+    width: 50%;
+    font-family: 'Amatic SC', cursive;
+    font-size: 2em;
+}
+
+.left{
+    color: red;
+    font-size: 4em;
+    line-height: 0.9em;
+}
+
+.right{
+    font-size: 4em;
+    text-align: left !important;
+    line-height: 0.9em;
+}

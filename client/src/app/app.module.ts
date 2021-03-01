@@ -5,6 +5,7 @@ import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GameRoomModule } from './game-room/game-room.module';
+import { MenuModule } from './menu/menu.module';
 
 @NgModule({
   declarations: [
@@ -15,9 +16,11 @@ import { GameRoomModule } from './game-room/game-room.module';
     BrowserModule,
     AppRoutingModule,
     NgbModule,
-    GameRoomModule
+    GameRoomModule,
+    MenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

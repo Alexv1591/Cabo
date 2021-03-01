@@ -6,6 +6,7 @@ import { BoardComponent } from './board/board.component';
 import { ChatComponent } from './chat/chat.component';
 import { GameRoomComponent } from './game-room.component';
 import { PlayerComponent } from './board/player/player.component';
+import { CardComponent } from './board/card/card.component';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { PlayerComponent } from './board/player/player.component';
     BoardComponent,
     ChatComponent,
     GameRoomComponent,
-    PlayerComponent
+    PlayerComponent,
+    CardComponent
   ],
   imports: [
     CommonModule,
@@ -22,6 +24,6 @@ import { PlayerComponent } from './board/player/player.component';
   exports: [
     GameRoomComponent
   ],
-  entryComponents: [PlayerComponent]
+  entryComponents: [PlayerComponent, CardComponent]
 })
 export class GameRoomModule { }
