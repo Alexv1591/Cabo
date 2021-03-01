@@ -7,7 +7,8 @@ export enum SUIT {
     SPADE = 'Spade'
 }
 export enum RANK {
-    TWO = 2,
+    ACE = 1,
+    TWO,
     THREE,
     FOUR,
     FIVE,
@@ -19,7 +20,6 @@ export enum RANK {
     JACK,
     QUEEN,
     KING,
-    ACE,
     JOKER,
 }
 
@@ -52,8 +52,6 @@ export class NormalCard extends Card{
     public get val():number{
         if(this.rank===RANK.KING && ( this.suit===SUIT.HEART || this.suit===SUIT.DIAMOND)) // black king
             return -2;
-        if(this.rank===RANK.ACE)
-            return 1;
         return super.val;
         
     }
@@ -63,7 +61,6 @@ export class NormalCard extends Card{
     }
 
     private rankNumToLetter() {
-        let ret_val='';
         if(this.rank.valueOf()<=10)
             return this.rank.valueOf();
         switch (this.rank) {
