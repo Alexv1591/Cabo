@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, Renderer2, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { RoomService } from '../../services/room.service';
 import { CardComponent } from '../card/card.component';
 
 @Component({
@@ -21,12 +22,10 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   @ViewChild( '_7', {read: ViewContainerRef} ) _7: ViewContainerRef;
   private cardRef: ViewContainerRef[];
   public isEmpty: Array<boolean>;
+  playerId: string;
 
-  constructor( private host:ElementRef, private renderer: Renderer2, private resolver: ComponentFactoryResolver) {
+  constructor( private resolver: ComponentFactoryResolver, private room_service: RoomService ) {
     this.isEmpty = [ false, false, false, false, true, true, true, true ];
-    // for (let i = 0; i < 8; i++) {
-    //   this.isEmpty.push(i>3);
-    // }
   }
 
   ngOnInit(): void{ }
@@ -34,7 +33,10 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void{
     this.cardRef = [ this._0, this._1, this._2, this._3, this._4, this._5, this._6, this._7 ];
     this.setPosition( this.data[0], this.data[1], this.data[2] );
+    this.playerId = this.data[3];
     setTimeout( () => {
+      console.log(this.playerId);
+      console.log(this.room_service.players);
       this.createCardholders();
     }, 0);
   }
@@ -43,18 +45,14 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     this.container.nativeElement.style.top = top;
     this.container.nativeElement.style.left = left;
     this.container.nativeElement.style.transform = rotation;
-
   }
 
   private createCardholders(): void{
     for (let i = 0; i < this.cardRef.length; i++) {
       const componentFactory = this.resolver.resolveComponentFactory(CardComponent);
       let cardRef = this.cardRef[i].createComponent(componentFactory);
-      // console.log("player ")
-      // console.log(cardRef)
       cardRef.instance.empty = i>3;
     }
   }
-
 
 }

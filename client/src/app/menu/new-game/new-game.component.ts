@@ -1,6 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-new-game',
@@ -42,10 +41,10 @@ export class NewGameComponent implements OnInit {
 
   startClicked(): void {
     if( this.playerCount + this.botCount > 0){
-      console.log( "Start clicked:\n" + this.playerCount + " players\n" + this.botCount + " bots");
-      let pc = this.playerCount;
+      let pc = this.playerCount + 1;
       let bc = this.botCount;
-      this.router.navigate( ['/game-room'], {state: {data: { pc, bc }}});
+      let create = true;
+      this.router.navigate( ['/game-room'], {state: {data: { create, pc, bc }}});
     }
   }
 

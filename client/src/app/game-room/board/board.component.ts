@@ -1,4 +1,5 @@
-import { AfterContentInit, AfterViewInit, Component, ComponentFactoryResolver, ElementRef, OnInit, Renderer2, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { RoomService } from '../services/room.service';
 import { PlayerComponent } from './player/player.component';
 
 @Component({
@@ -13,11 +14,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private player_count: number;
   private placement_angles: number[];
 
-  constructor(private resolver: ComponentFactoryResolver, private host:ElementRef) {
+  constructor(private resolver: ComponentFactoryResolver, private host:ElementRef, private room_service: RoomService) {
     console.log( history.state.data );
     console.log( history.state.data.pc+history.state.data.bc );
     this.placement_angles = new Array<number>();
-    this.player_count = history.state.data.pc+history.state.data.bc+1;
+    this.player_count = room_service.players.length;
   }
 
   private setup(num_of_players: number, radius: number) {
@@ -30,7 +31,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
       let topp:string = (((mainHeight / 2) - initX - 100 )/mainHeight*100).toPrecision(4) + '%',
           leftp:string = (((mainWidth / 2)*.7 + initY)/mainWidth*70).toPrecision(4) + '%',
           rotation:string = "rotate(" + ( i * (360 / num_of_players)) + "deg)";
-      data = [topp,leftp,rotation];
+      data = [topp,leftp,rotation,this.room_service.players[i]];
       const componentFactory = this.resolver.resolveComponentFactory(PlayerComponent);
       let playerRef = this.container.createComponent(componentFactory);
       playerRef.instance.data = data;

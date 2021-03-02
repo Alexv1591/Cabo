@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HowToPlayComponent } from './how-to-play/how-to-play.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
@@ -15,7 +16,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
 
   mainMenuComponent: ComponentRef<MainMenuComponent>;
 
-  constructor(private resolver: ComponentFactoryResolver) { }
+  constructor(private resolver: ComponentFactoryResolver, private router: Router) { }
 
   ngOnInit(): void { }
 
@@ -27,9 +28,9 @@ export class MenuComponent implements OnInit, AfterViewInit {
       case 'new-game':
         this.loadNewGameComponent();
         break;
-      // case 'join-game':
-
-      //   break;
+      case 'join-game':
+        this.router.navigate( ['/game-room'], {state: {data: { create:false }}});
+        break;
       case 'how-to-play':
         this.loadHowToPlayComponent();
         break;
