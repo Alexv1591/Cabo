@@ -33,11 +33,11 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void{
     this.cardRef = [ this._0, this._1, this._2, this._3, this._4, this._5, this._6, this._7 ];
     this.setPosition( this.data[0], this.data[1], this.data[2] );
-    this.playerId = this.data[3];
     setTimeout( () => {
       console.log(this.playerId);
       console.log(this.room_service.players);
       this.createCardholders();
+      this.playerId = this.data[3];
     }, 0);
   }
 

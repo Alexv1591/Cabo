@@ -11,8 +11,10 @@ import { PlayerComponent } from './player/player.component';
 export class BoardComponent implements OnInit, AfterViewInit {
 
   @ViewChild( 'container', {read: ViewContainerRef} ) container: ViewContainerRef;
+  
   private player_count: number;
   private placement_angles: number[];
+  roundStart: boolean = false;
 
   constructor(private resolver: ComponentFactoryResolver, private host:ElementRef, private room_service: RoomService) {
     console.log( history.state.data );
@@ -38,7 +40,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }
   };
 
-  public generate(num_of_players: number, radius: number) {
+  private generate(num_of_players: number, radius: number) {
     radius = radius*0.7;
     let frags: number = 360 / num_of_players;
     for (var i = 0; i < num_of_players; i++) {
@@ -47,12 +49,34 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.setup(num_of_players, radius);
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    this.loadMassages();
+  }
 
   ngAfterViewInit():void {
     setTimeout( () => {
       this.generate(this.player_count, Math.round(this.host.nativeElement.offsetHeight * 0.5));
     }, 0);
+  }
+
+  receiveMessage($event): void {
+    this.roundStart = false;
+    let msg = $event;
+    console.log(msg);
+    if( msg=='draw' ){
+      this.newCard();
+    }
+  }
+
+  private async newCard(){
+    let tmp = await this.room_service.drawCard();
+    console.log( tmp );
+  }
+  
+  private async loadMassages() {
+    this.room_service.room.onMessage("my-turn", (message) => {
+      this.roundStart = true;
+    });
   }
 
 }

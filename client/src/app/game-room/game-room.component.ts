@@ -38,6 +38,9 @@ export class GameRoomComponent implements OnInit {
       console.log("game-start")
       this.flag = true;
     });
+    this.room_service.room.onMessage("my-turn", (message) => {
+      this.playerTurn();
+    });
     this.room_service.room.onMessage("GameOver", (message) => {
       console.log("GameOver");
     });
@@ -48,6 +51,6 @@ export class GameRoomComponent implements OnInit {
     console.log("it's my turn");
 
 
-    this.room_service.nextTurn();
+    //this.room_service.nextTurn();
   }
 }
