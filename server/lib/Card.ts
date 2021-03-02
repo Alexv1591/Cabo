@@ -1,10 +1,10 @@
 import { Schema , type } from "@colyseus/schema";
 
 export enum SUIT {
-    HEART = 'Heart',
-    DIAMOND = 'Diamond',
-    CLUB = 'Club',
-    SPADE = 'Spade'
+    HEART = 'HEART',
+    DIAMOND = 'DIAMOND',
+    CLUB = 'CLUB',
+    SPADE = 'SPADE',
 }
 export enum RANK {
     TWO = 2,
@@ -26,6 +26,8 @@ export enum RANK {
 export class Card extends Schema{ // both NormalCard and Joker extends this class
     //@type("string")
     imagePath: string = "";
+    protected static path_prefix="assets/Cards/";
+    protected static path_postfix=".png";
     constructor(private _rank:RANK)
     { super()  }
     public get rank():RANK { return this._rank };
@@ -36,7 +38,29 @@ export class Card extends Schema{ // both NormalCard and Joker extends this clas
 
     public get image(){ return this.imagePath; }
     
-    //TO DO - add static method to create Card from image path
+    public static CardFromPathFactory(path:string):Card
+    {
+        const card_regex=/^(CLUB|HEART|SPADE|DIAMOND)-([1-9][1-3]?)/;
+        path=path.replace(this.path_prefix,"").replace(this.path_postfix,"");
+        if(!card_regex.test(path) && path!=="JOKER-1")
+            throw path + " is not legal card path";
+        if(path=="JOKER-1")
+            return new Joker();
+        let suit=path.match(card_regex)[1],rank=parseInt(path.match(card_regex)[2]);
+        switch(suit){
+            case(SUIT.HEART):
+                return new NormalCard(rank,SUIT.HEART);
+            case(SUIT.CLUB):
+                return new NormalCard(rank,SUIT.CLUB);
+            case(SUIT.SPADE):
+                return new NormalCard(rank,SUIT.SPADE);
+            case(SUIT.DIAMOND):
+                return new NormalCard(rank,SUIT.DIAMOND);
+            default:
+                throw "somthing went worng while trying to create a card";
+
+        }
+    }
 }
 
 export class NormalCard extends Card{
@@ -44,7 +68,7 @@ export class NormalCard extends Card{
         super(card_number);
         if(this.rank===RANK.JOKER)
             throw "Joker is'nt a regular card. It has a class for its own"
-        super.img = this.toString();
+        super.img = Card.path_prefix+card_suit+'-'+card_number+Card.path_postfix;
     }
 
     public get suit() :SUIT { return this.card_suit; }
@@ -100,8 +124,8 @@ export class Joker extends Card{
     constructor()
     {
         super(RANK.JOKER);
-        //add img path
-        super.img = this.toString();
+        
+        super.img =Card.path_prefix+ "JOKER-1"+Card.path_postfix;
     }
 
     public get val()
