@@ -72,14 +72,6 @@ export class CaboRoom extends Room {
 
   }
 
-  // private getClientById(id:string) :Client{
-  //   let playersArray=Array.from(this.state.players.values()).map((player:any)=>player=player.client);
-  //   console.log(playersArray)
-  //   if(playersArray.includes())
-
-    
-  // }
-
   private logDiscardPile() {
     let str = "[";
     this.state.discard_pile.forEach((card: Card) => { str += " " + card; });
@@ -104,6 +96,7 @@ export class CaboRoom extends Room {
     }
     this.sendPlayers()
     this.currentTurnIndex=this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
+    this.broadcast('game-start',);//TODO: send to card from the hand for every player
     this.initPlayerTurn();
   }
 
