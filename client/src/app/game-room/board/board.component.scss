@@ -35,3 +35,23 @@ div.placeholder {
         color: grey;
     }
 }
+
+.pack_discard{
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%,-50%);
+    padding: 33px;
+    box-shadow: inset 0 0 15px black;
+    .row{
+        .col- {
+            padding: 1em;
+        }
+    }
+}
+
+h1{
+    font-size: 10em;
+
+}

@@ -7,6 +7,8 @@ import { ChatComponent } from './chat/chat.component';
 import { GameRoomComponent } from './game-room.component';
 import { PlayerComponent } from './board/player/player.component';
 import { CardComponent } from './board/card/card.component';
+import { PackComponent } from './board/pack/pack.component';
+import { DiscardComponent } from './board/discard/discard.component';
 
 
 @NgModule({
@@ -15,7 +17,9 @@ import { CardComponent } from './board/card/card.component';
     ChatComponent,
     GameRoomComponent,
     PlayerComponent,
-    CardComponent
+    CardComponent,
+    PackComponent,
+    DiscardComponent
   ],
   imports: [
     CommonModule,
