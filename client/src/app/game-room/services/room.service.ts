@@ -10,15 +10,17 @@ export class RoomService {
   private _room:Room;
   private _client:Client;
   private _serverMsg:any; 
-  public _players:Array<String>;
-  private _myId;
+  private _players:Array<string>;
+  private _myId:string;
 
 
   constructor() { }
 
-  public get room() : Room {
-    return this._room;
-  }
+  public get room() : Room  {  return this._room;  }
+
+  public get myId() : string {  return this._myId;  }
+
+  public get players() : string[] { return this._players;}
   
 
   public createClient() : void
