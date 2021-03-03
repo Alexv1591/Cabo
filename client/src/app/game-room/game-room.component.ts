@@ -8,7 +8,7 @@ import { RoomService } from './services/room.service';
               <ng-container *ngIf="flag; else loading"><app-board></app-board></ng-container>
               <ng-template #loading>
                 <div class="loader">
-                  <div #loading class="spinner-grow" role="status">
+                  <div class="spinner-grow" role="status">
                     <span class="sr-only">Loading...</span>
                   </div>
                 </div>
