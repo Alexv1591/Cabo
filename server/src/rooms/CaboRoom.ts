@@ -49,14 +49,14 @@ export class CaboRoom extends Room {
 
     this.onMessage("to_discard",(client, message) => {
       this.state.discard_pile.push(message.card);
-      console.log(message.card+" added to discard pile");
+      console.log(message.card+" added to discard pile");//debug
     });
 
     this.onMessage("draw-card",(client,message)=>{
       if(this.getCurrentTurnId()==client.sessionId){
-        let img=this.state.pack.draw().image;
-        console.log(client.sessionId+" draw "+ img); 
-        client.send("drawn-card",img);
+        let card=this.state.pack.draw()
+        console.log(client.sessionId+" draw "+ card); 
+        client.send("drawn-card",card.image);
       }
       else
         client.send("drawn-card","!");
@@ -70,6 +70,20 @@ export class CaboRoom extends Room {
       client.send("get-card",card.image);
     });
 
+    this.onMessage("swap-with-deck",(client,message)=>{
+      let player:Player=<Player>this.getPlayerById(client.sessionId);
+      let card=player.swapCard(Card.CardFromPathFactory(message.card),message.index);
+      this.state.discard_pile.push(card.toString());
+      console.log(client.sessionId+" swap the card in index " + message.index);//debug
+      console.log(card.toString()+" added to discard pile");//debug
+    });
+
+  }
+
+  private getPlayerById(id:string){
+    let players=Array.from(this.state.players.values())
+    let player=players.find((player:any)=>{ return id===player.client.sessionId;});
+    return player;
   }
 
   private logDiscardPile() {
@@ -109,7 +123,7 @@ export class CaboRoom extends Room {
 
   private sendPlayers()
   {
-    let playersId=Array.from(this.state.players.values())//.map((player:any)=>{player.client.sessionId;});
+    let playersId=Array.from(this.state.players.values())
     playersId=playersId.map((value:any)=>value.client.sessionId);
     for(let player of this.state.players.values()){
       player.client.send("players",playersId);

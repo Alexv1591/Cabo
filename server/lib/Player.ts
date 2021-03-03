@@ -29,6 +29,11 @@ export class Player extends Schema{
         return removedCard;
     }
 
+    public swapCard(card:Card,index:number):Card
+    {
+        return this.hand.swapCard(card,index);
+    }
+
     public getCard(key:number){
         return this.hand.getCard(key);
     }
