@@ -13,7 +13,7 @@ export class CardPack extends Schema
     }
     private createDeck() : void
     {
-        for( let i= RANK.TWO; i<RANK.JOKER ; i++ )
+        for( let i= RANK.ACE; i<RANK.JOKER ; i++ )
         {
             Object.keys(SUIT).forEach(suit=>{
                 this.deck.push(new NormalCard(i,SUIT[suit as keyof typeof SUIT]));

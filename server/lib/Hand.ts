@@ -45,5 +45,13 @@ export class Hand {
         });
         return str+']';
     }
+
+    public swapCard(new_card:Card,key:number):Card{
+        if(!this.cards.has(key))
+            throw "This Hand don't have a card in index "+key;
+        let swaped_card=this.getCard(key);
+        this.cards.set(key,new_card);
+        return swaped_card;
+    }
     
 }

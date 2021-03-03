@@ -7,7 +7,7 @@ export enum SUIT {
     SPADE = 'SPADE',
 }
 export enum RANK {
-    ACE = 1,
+    ACE=1,
     TWO,
     THREE,
     FOUR,
@@ -20,7 +20,7 @@ export enum RANK {
     JACK,
     QUEEN,
     KING,
-    JOKER,
+    JOKER
 }
 
 export class Card extends Schema{ // both NormalCard and Joker extends this class
@@ -133,5 +133,4 @@ export class Joker extends Card{
     public toString() {
         return "JOKER";
     }
-
 }
