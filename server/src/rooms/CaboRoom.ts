@@ -18,7 +18,8 @@ export class CaboRoom extends Room {
   }
 
   onJoin(client: Client, options: any) {
-    this.state.players.set((this.state.num_of_players++).toString(), new Player(client));
+    this.state.players.push(new Player(client));
+    this.state.num_of_players++;
     console.log(client.id + " joined successfully to "+this.roomId);
     if (!this.gameStart())
       return;
@@ -63,17 +64,15 @@ export class CaboRoom extends Room {
     });
 
     this.onMessage("get-card",(client,message)=>{
-      let player:Player=<Player>Array.from(this.state.players.values()).find((player:any)=>{return player.client.sessionId==message.player;});
-      if(typeof player==="undefined")
-        throw message.player +" is not a player in this game";
+      let player:Player=this.getPlayerById(message.player);
       let card=player.getCard(message.index);
       client.send("get-card",card.image);
     });
 
     this.onMessage("swap-with-deck",(client,message)=>{
-      let player:Player=<Player>this.getPlayerById(client.sessionId);
+      let player:Player=this.getPlayerById(client.sessionId);
       let card=player.swapCard(Card.CardFromPathFactory(message.card),message.index);
-      this.state.discard_pile.push(card.toString());
+      this.state.discard_pile.push(card.image);
       console.log(client.sessionId+" swap the card in index " + message.index);//debug
       console.log(card.toString()+" added to discard pile");//debug
     });
@@ -81,8 +80,9 @@ export class CaboRoom extends Room {
   }
 
   private getPlayerById(id:string){
-    let players=Array.from(this.state.players.values())
-    let player=players.find((player:any)=>{ return id===player.client.sessionId;});
+    let player=this.state.players.find((player:any)=>{ return id===player.client.sessionId;});
+    if(typeof player==="undefined")
+      throw id +" is not a player in this game";
     return player;
   }
 
@@ -118,13 +118,12 @@ export class CaboRoom extends Room {
     this.turns++;
     this.state.currentTurn=this.getCurrentTurnId();
     console.log("turns: "+this.turns+" player: "+this.state.currentTurn);
-    this.state.players.get(this.currentTurnIndex.toString()).client.send("my-turn",);
+    this.state.players[this.currentTurnIndex].client.send("my-turn",);
   }
 
   private sendPlayers()
   {
-    let playersId=Array.from(this.state.players.values())
-    playersId=playersId.map((value:any)=>value.client.sessionId);
+    let playersId=this.state.players.map((value:any)=>value.client.sessionId);
     for(let player of this.state.players.values()){
       player.client.send("players",playersId);
       let val=playersId.shift();
@@ -133,7 +132,7 @@ export class CaboRoom extends Room {
   }
 
   private getCurrentTurnId(): any {
-    return this.state.players.get(this.currentTurnIndex.toString()).client.id;
+    return this.state.players[this.currentTurnIndex].client.sessionId;
   }
 
   private getRandomInt(max:number) {

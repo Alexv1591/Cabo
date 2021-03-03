@@ -1,5 +1,4 @@
-import { Schema, type, MapSchema,ArraySchema, } from "@colyseus/schema";
-import { Card } from "../../../lib/Card"
+import { Schema, type,ArraySchema, } from "@colyseus/schema";
 import { CardPack } from "../../../lib/CardPack";
 import { Player } from "../../../lib/Player"
 
@@ -8,8 +7,8 @@ export class CaboState extends Schema {
   @type("string")
   currentTurn:string = "";
 
-  @type({map: Player})
-  players:MapSchema<Player>=new MapSchema<Player>();
+  @type([Player])
+  players:ArraySchema<Player>=new ArraySchema<Player>();
 
   @type("number")
   num_of_players:number;
