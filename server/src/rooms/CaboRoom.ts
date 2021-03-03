@@ -77,6 +77,15 @@ export class CaboRoom extends Room {
       console.log(card.toString()+" added to discard pile");//debug
     });
 
+    this.onMessage("swap-two-cards",(client,message)=>
+    { //message template => {players:[**player1 id**,**player2 id**],cards:[**card index for player1**,**card index for player2**]}
+      let players=message.players.map((value:any)=>this.getPlayerById(value));
+      let indexes=message.cards;
+      //swap cards
+      let card=players[0].swapCard(players[1].getCard(indexes[1]),indexes[0]);
+      players[1].swapCard(card,indexes[1]);
+    });
+
   }
 
   private getPlayerById(id:string){
@@ -105,7 +114,7 @@ export class CaboRoom extends Room {
       }
     }
 
-    for (let player of this.state.players.values()) {
+    for (let player of this.state.players) {
       console.log(player+"")
     }
     this.sendPlayers()
