@@ -6,7 +6,13 @@ import { RoomService } from './services/room.service';
   selector: 'game-room',
   template: `
               <ng-container *ngIf="flag; else loading"><app-board></app-board></ng-container>
-              <ng-template #loading>Loading</ng-template>
+              <ng-template #loading>
+                <div class="loader">
+                  <div #loading class="spinner-grow" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
+              </ng-template>
               <app-chat></app-chat>
   `,
   styleUrls: ['./game-room.component.scss']
@@ -22,10 +28,10 @@ export class GameRoomComponent implements OnInit {
   }
 
   private async createRoom() {
-    let room:Room;
+    let room: Room;
     if (history.state.data.create) {
       let pc = history.state.data.pc,
-          bc = history.state.data.bc;
+        bc = history.state.data.bc;
       room = await this.room_service.joinOrCreate({ players: pc, AI: bc });
     }
     else
