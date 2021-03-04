@@ -10,8 +10,8 @@
             <div class="col-">
                 STICK
             </div>
-            <div #discard class="discard col-">
-                <app-discard [isDrawable]="roundStart" (choice)="receiveMessage($event)"></app-discard>
+            <div class="discard col-">
+                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard" (choice)="receiveMessage($event)"></app-discard>
             </div>
         </div>
     </div>

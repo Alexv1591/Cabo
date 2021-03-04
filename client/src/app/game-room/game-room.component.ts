@@ -31,7 +31,7 @@ export class GameRoomComponent implements OnInit {
     let room: Room;
     if (history.state.data.create) {
       let pc = history.state.data.pc,
-        bc = history.state.data.bc;
+          bc = history.state.data.bc;
       room = await this.room_service.joinOrCreate({ players: pc, AI: bc });
     }
     else
