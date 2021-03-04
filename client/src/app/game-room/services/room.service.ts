@@ -112,5 +112,9 @@ export class RoomService {
     return new Promise((resolve,reject)=> this.waitForServerMessage(5,resolve,reject));
   }
 
+  public sendChatMessage(message){
+    this._room.send("chat-message",message);
+  }
+
 
 }
