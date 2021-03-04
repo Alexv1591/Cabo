@@ -7,7 +7,9 @@ import { ChatComponent } from './chat/chat.component';
 import { GameRoomComponent } from './game-room.component';
 import { PlayerComponent } from './board/player/player.component';
 import { CardComponent } from './board/card/card.component';
-
+import { AddMessageComponent } from './chat/add-message/add-message.component'
+import { MessageComponent } from './chat/message/message.component';
+import { MessagesComponent } from './chat/messages/messages.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,10 @@ import { CardComponent } from './board/card/card.component';
     ChatComponent,
     GameRoomComponent,
     PlayerComponent,
-    CardComponent
+    CardComponent,
+    AddMessageComponent,
+    MessageComponent,
+    MessagesComponent
   ],
   imports: [
     CommonModule,
