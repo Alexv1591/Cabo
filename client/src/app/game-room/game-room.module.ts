@@ -10,6 +10,7 @@ import { CardComponent } from './board/card/card.component';
 import { AddMessageComponent } from './chat/add-message/add-message.component'
 import { MessageComponent } from './chat/message/message.component';
 import { MessagesComponent } from './chat/messages/messages.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { MessagesComponent } from './chat/messages/messages.component';
   ],
   imports: [
     CommonModule,
-    GameRoomRoutingModule
+    GameRoomRoutingModule,
+    FormsModule
   ],
   exports: [
     GameRoomComponent
