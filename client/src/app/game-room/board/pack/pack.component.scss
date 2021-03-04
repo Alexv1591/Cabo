@@ -11,36 +11,30 @@ img{
 
 @keyframes glow-green {
     from {
-        box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px limegreen, 0 0 40px limegreen, 0 0 50px limegreen,
-            0 0 60px limegreen, 0 0 70px limegreen;
+      box-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 9px limegreen, 0 0 12px limegreen;
     }
-
+    
     to {
-        box-shadow: 0 0 20px #fff, 0 0 30px green, 0 0 40px green, 0 0 50px green, 0 0 60px green, 0 0 70px green,
-            0 0 80px green;
+      box-shadow: 0 0 4px #fff, 0 0 8px green, 0 0 12px green, 0 0 16px green;
     }
 }
 
 @keyframes glow-yellow {
     from {
-        box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px yellow, 0 0 40px yellow, 0 0 50px yellow, 0 0 60px yellow,
-            0 0 70px yellow;
+        box-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 9px yellow, 0 0 12px yellow
     }
 
     to {
-        box-shadow: 0 0 20px #fff, 0 0 30px yellowgreen, 0 0 40px yellowgreen, 0 0 50px yellowgreen,
-            0 0 60px yellowgreen, 0 0 70px yellowgreen, 0 0 80px yellowgreen;
+        box-shadow: 0 0 4px #fff, 0 0 8px yellowgreen, 0 0 12px yellowgreen, 0 0 16px yellowgreen;
     }
 }
 
 @keyframes glow-orange {
     from {
-        box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px orange, 0 0 40px orange, 0 0 50px orange, 0 0 60px orange,
-            0 0 70px orange;
+        box-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 9px orange, 0 0 12px orange;
     }
 
     to {
-        box-shadow: 0 0 20px #fff, 0 0 30px orangered, 0 0 40px orangered, 0 0 50px orangered, 0 0 60px orangered,
-            0 0 70px orangered, 0 0 80px orangered;
+        box-shadow: 0 0 4px #fff, 0 0 8px orangered, 0 0 12px orangered, 0 0 16px orangered;
     }
 }

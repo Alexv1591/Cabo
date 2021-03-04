@@ -4,8 +4,8 @@ import { PlayerComponent } from './player/player.component';
 import { RevealedCardComponent } from './revealed-card/revealed-card.component';
 
 enum Glow {
-  draw = 'limegreen',
-  replace = 'limegreen',
+  draw = 'green',
+  replace = 'green',
   swap = 'yellow',
   stick = 'orange',
 }
@@ -110,11 +110,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   private playerGlow( mode:string ){
-
+    console.log("playerGlow(" + mode + ")")
+    this.playerRefs[0].instance.setGlow( mode );
   }
 
   private opponentGlow( mode:string ){
-
+    for (let i = 1; i < this.playerRefs.length; i++) {
+      this.playerRefs[0].instance.setGlow( mode );
+    }
   }
 
   private packGlow( mode:string ){

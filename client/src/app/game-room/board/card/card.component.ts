@@ -3,7 +3,7 @@ import { Component, ElementRef, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-card',
-  template: `<img [@glowStatus]="status" *ngIf="!empty" src="assets/Cards/Back.png" [style.animation]="isReplacable? style : 'none'">`,
+  template: `<img [@glowStatus]="status" *ngIf="!empty" src="assets/Cards/Back.png" [style.animation]="glowStyle">`,
   styleUrls: ['./card.component.scss'],
   animations: [
     trigger('glowStatus', [
@@ -17,13 +17,30 @@ import { Component, ElementRef, Input, OnInit } from '@angular/core';
 })
 export class CardComponent implements OnInit {
 
-  style = "glow-green 1s ease-in-out infinite alternate"; //TO DO a separate file to store these
+  @Input('empty') empty:boolean;
 
-  isReplacable: boolean = false;
+  glowStyle: string = 'none';
 
   status: 'in' | 'out' = 'out';
 
-  @Input('empty') empty:boolean;
+  public setGlow( color: string ){
+    switch (color) {
+      case 'green':
+        this.glowStyle = "glow-green 1s ease-in-out infinite alternate";
+        break;
+      case 'yellow':
+        this.glowStyle = "glow-yellow 1s ease-in-out infinite alternate";
+        break;
+      case 'orange':
+        this.glowStyle = "glow-orange 1s ease-in-out infinite alternate";
+        break;
+      case 'none':
+        this.glowStyle = "none";
+        break;
+      default:
+        throw "Card can't set glow -- invalid value provided"
+    }
+  }
 
   constructor(private elRef:ElementRef) { }
 
