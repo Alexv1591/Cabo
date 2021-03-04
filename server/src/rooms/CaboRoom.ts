@@ -86,6 +86,10 @@ export class CaboRoom extends Room {
       players[1].swapCard(card,indexes[1]);
     });
 
+    this.onMessage("chat-message",(client,message)=>{
+      this.broadcast("chat-message",{player:client.sessionId,message:message});
+    });
+
   }
 
   private getPlayerById(id:string){
