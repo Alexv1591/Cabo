@@ -2,16 +2,16 @@
     <ng-template #container>
 
     </ng-template>
-    <div class="pack_discard">
+    <div #pack_discard class="pack_discard">
         <div class="row">
-            <div class="col-">
-                <app-pack [isActive]="roundStart" (choice)="receiveMessage($event)"></app-pack>
+            <div #pack id="pack" class="col-">
+                <app-pack [isDrawable]="roundStart" (choice)="receiveMessage($event)"></app-pack>
             </div>
             <div class="col-">
                 STICK
             </div>
-            <div class="col-">
-                <app-discard></app-discard>
+            <div #discard class="discard col-">
+                <app-discard [isDrawable]="roundStart" (choice)="receiveMessage($event)"></app-discard>
             </div>
         </div>
     </div>

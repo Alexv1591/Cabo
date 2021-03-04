@@ -9,6 +9,7 @@ import { PlayerComponent } from './board/player/player.component';
 import { CardComponent } from './board/card/card.component';
 import { PackComponent } from './board/pack/pack.component';
 import { DiscardComponent } from './board/discard/discard.component';
+import { RevealedCardComponent } from './board/revealed-card/revealed-card.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { DiscardComponent } from './board/discard/discard.component';
     PlayerComponent,
     CardComponent,
     PackComponent,
-    DiscardComponent
+    DiscardComponent,
+    RevealedCardComponent
   ],
   imports: [
     CommonModule,

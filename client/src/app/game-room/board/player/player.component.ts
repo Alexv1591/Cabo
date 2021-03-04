@@ -9,7 +9,7 @@ import { CardComponent } from '../card/card.component';
 })
 export class PlayerComponent implements OnInit, AfterViewInit {
 
-  @Input('data') data: string[];
+  @Input('data') data: any;
 
   @ViewChild( 'container', {static: true} ) container: ElementRef;
   @ViewChild( '_0', {read: ViewContainerRef} ) _0: ViewContainerRef;
@@ -32,12 +32,12 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void{
     this.cardRef = [ this._0, this._1, this._2, this._3, this._4, this._5, this._6, this._7 ];
-    this.setPosition( this.data[0], this.data[1], this.data[2] );
+    if( this.data.top == "undefined" )
+      throw "Played data error";
+    this.setPosition( this.data.top, this.data.left, this.data.rotation ); this.data.top=="undefined"
     setTimeout( () => {
-      console.log(this.playerId);
-      console.log(this.room_service.players);
       this.createCardholders();
-      this.playerId = this.data[3];
+      this.playerId = this.data.id;
     }, 0);
   }
 
