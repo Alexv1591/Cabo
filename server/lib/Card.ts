@@ -122,7 +122,7 @@ export class Joker extends Card{
     {
         super(RANK.JOKER);
         
-        super.img =Card.path_prefix+ "JOKER-1"+Card.path_postfix;
+        super.img =Card.path_prefix+ "JOKER-3"+Card.path_postfix;
     }
 
     public get val()
