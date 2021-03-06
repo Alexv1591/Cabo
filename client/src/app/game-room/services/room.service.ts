@@ -25,15 +25,11 @@ export class RoomService {
   public get players() : string[] { return this._players;}
 
   public get messages() { 
-    //return Observable.create((observer)=>{ 
-      //if(typeof this.room!="undefined")
       return this._messages.asObservable();
-        //this.room.onMessage('chat-message',(message)=>observer.next(message))
-   // });
-   }
-  
-   public
+  }
 
+
+  
   public createClient() : void
   {
     this._client=new Client('ws://localhost:3000');
@@ -55,6 +51,14 @@ export class RoomService {
     }catch(error){
       throw error+" Something bad happened while we were trying to create a room." ;
     }
+  }
+
+  public async checkAvailableRoom():Promise<boolean>{
+    let rooms=await this._client.getAvailableRooms("cabo_room");
+    if(rooms.length>0)
+      return true;
+    else
+      return false;
   }
 
   private checkOptions(options:any){

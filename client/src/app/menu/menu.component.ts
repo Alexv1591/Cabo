@@ -53,7 +53,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
           this.loadNewGameComponent();
           break;
         case 'join-game':
-          this.router.navigate( ['/game-room'], {state: {data: { create:false }}});
+          this.router.navigate( ['/game-room'],);
           break;
         case 'how-to-play':
           this.loadHowToPlayComponent();
