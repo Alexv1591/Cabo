@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Client, Room } from 'colyseus.js';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { AlertService } from 'src/app/_alert';
 
 const TO_MUCH_TIME:number=3125;
 
@@ -16,7 +18,7 @@ export class RoomService {
   private _messages:Subject<any>=new BehaviorSubject<any>([]);
 
 
-  constructor() { }
+  constructor(private router:Router,private alert_service: AlertService ) { }
 
   public get room() : Room  {  return this._room;  }
 
@@ -40,7 +42,7 @@ export class RoomService {
     console.log(options);
     try{
       if(typeof options==="undefined")
-        this._room=await this._client.join("cabo_room");//TODO: CHANGE TO this._client.join("Cabo_room")
+        await this.joinRoom();
       else{
         this.checkOptions(options);
         this._room=await this._client.create("cabo_room",options);
@@ -49,11 +51,28 @@ export class RoomService {
       this._myId=this._room.sessionId;
       return this._room;
     }catch(error){
-      throw error+" Something bad happened while we were trying to create a room." ;
+      switch(error){
+        case 0:
+          this.alert_service.error("There are no avilable room",{});
+          break;
+        default:
+          this.alert_service.error("Cannot access the server.");
+          break;
+      }
+      this.router.navigate( ['/*'],);
+      return null;
     }
   }
 
-  public async checkAvailableRoom():Promise<boolean>{
+  private async joinRoom(){
+    if(await this.checkAvailableRoom())
+      this._room=await this._client.join("cabo_room");
+    else{
+      throw 0;
+    }
+  }
+
+  private async checkAvailableRoom():Promise<boolean>{
     let rooms=await this._client.getAvailableRooms("cabo_room");
     if(rooms.length>0)
       return true;

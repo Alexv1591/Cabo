@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Room } from 'colyseus.js';
 import { RoomService } from './services/room.service';
 
 @Component({
@@ -23,32 +21,22 @@ import { RoomService } from './services/room.service';
 export class GameRoomComponent implements OnInit {
   private i: number = 0;
   flag: boolean = false;
-  constructor(private room_service: RoomService,private router:Router) { }
+  constructor(private room_service: RoomService) { }
 
   ngOnInit(): void {
     this.room_service.createClient();
+    this.joinOrCreateRoom();
+
+  }
+
+  private async joinOrCreateRoom() {
+    let room;
     if(history.state.data)
-      this.createRoom();
+      room = await this.room_service.joinOrCreate({ players: history.state.data.pc, AI: history.state.data.bc });
     else 
-      this.joinRoom();
-  }
-
-  private async createRoom() {
-    let pc = history.state.data.pc,
-        bc = history.state.data.bc;
-    let room = await this.room_service.joinOrCreate({ players: pc, AI: bc });
-    this.loadMassages();
-
-  }
-
-  private async joinRoom(){
-    let available=await this.room_service.checkAvailableRoom();
-    if(!available)
-      this.router.navigate( ['/*'],);
-    else{
-      let room=await this.room_service.joinOrCreate();
+      room=await this.room_service.joinOrCreate();
+    if(this.room_service.room)
       this.loadMassages();
-    }
   }
 
   private async loadMassages() {
