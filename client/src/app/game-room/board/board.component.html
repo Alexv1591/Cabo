@@ -2,6 +2,19 @@
     <ng-template #container>
 
     </ng-template>
+    <div #pack_discard class="pack_discard">
+        <div class="row">
+            <div #pack id="pack" class="col-">
+                <app-pack [isDrawable]="roundStart" (choice)="receiveMessage($event)"></app-pack>
+            </div>
+            <div class="col-">
+                STICK
+            </div>
+            <div class="discard col-">
+                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard" (choice)="receiveMessage($event)"></app-discard>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="menu-button">
