@@ -5,7 +5,10 @@ import { RoomService } from './services/room.service';
 @Component({
   selector: 'game-room',
   template: `
-              <ng-container *ngIf="flag; else loading"><app-board></app-board></ng-container>
+              <ng-container *ngIf="flag; else loading">
+                <app-board></app-board>
+                <app-chat></app-chat>
+              </ng-container>
               <ng-template #loading>
                 <div class="loader">
                   <div class="spinner-grow" role="status">
@@ -13,7 +16,6 @@ import { RoomService } from './services/room.service';
                   </div>
                 </div>
               </ng-template>
-              <app-chat></app-chat>
   `,
   styleUrls: ['./game-room.component.scss']
 })
