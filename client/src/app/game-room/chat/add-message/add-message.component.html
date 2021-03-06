@@ -1,6 +1,6 @@
 <div class="input-group my-3">
     <input type="text" class="form-control" placeholder="Type a message" aria-describedby="basic-addon2" [(ngModel)]="input"/>
     <div class="input-group-append">
-        <button class="btn btn-info" type="button" (click)="send()">SEND</button>
+        <button class="btn btn-info" type="button" (click)="send()" [disabled]="!input"><i class="bi bi-chevron-right d-flex align-items-center"></i></button>
     </div>
 </div>

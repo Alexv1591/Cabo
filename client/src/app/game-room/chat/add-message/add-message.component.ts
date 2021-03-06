@@ -4,7 +4,7 @@ import { RoomService } from '../../services/room.service';
 @Component({
   selector: 'chat-add-message',
   templateUrl: './add-message.component.html',
-  styleUrls: ['./add-message.component.scss']
+  styles: [':host { padding-right:2%; display: block;}']
 })
 export class AddMessageComponent implements OnInit {
   input:string;
