@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { RoomService } from '../../services/room.service';
 import { CardComponent } from '../card/card.component';
 
@@ -23,21 +23,35 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   private containderRef: ViewContainerRef[];
   private cardRefs: ComponentRef<CardComponent>[];
   public isEmpty: Array<boolean>;
-  playerId: string;
+  private playerId: string;
+  private isClickable: boolean = false;
+  
+  @Output()  public choice:EventEmitter<string> = new EventEmitter();
 
   constructor(private resolver: ComponentFactoryResolver, private room_service: RoomService) {
     this.isEmpty = [false, false, false, false, true, true, true, true];
     this.cardRefs = new Array<ComponentRef<CardComponent>>();
   }
+  
+  containerClick(containerId:string): void {
+    if( this.isClickable && !this.isEmpty[ Number(containerId) ] )
+      this.choice.next( containerId+this.playerId );
+  }
+
+  public get id(){
+    return this.playerId;
+  }
 
   ngOnInit(): void { }
 
   public setGlow(color: string) {
+    this.isClickable = color!='none';
     for (let i = 0; i < this.cardRefs.length; i++)
       this.cardRefs[i].instance.setGlow(color);
   }
 
   public removeGlow() {
+    this.isClickable = false;
     for (let i = 0; i < this.cardRefs.length; i++) {
       this.cardRefs[i].instance.setGlow( 'none' );
     }
@@ -45,8 +59,8 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.containderRef = [this._0, this._1, this._2, this._3, this._4, this._5, this._6, this._7];
-    if (this.data.top == "undefined")
-      throw "Played data error";
+    if (this.data.top == "undefined" || this.data.left == "undefined" || this.data.rotation == "undefined")
+      throw "Player data error";
     this.setPosition(this.data.top, this.data.left, this.data.rotation); this.data.top == "undefined"
     setTimeout(() => {
       this.createCardholders();

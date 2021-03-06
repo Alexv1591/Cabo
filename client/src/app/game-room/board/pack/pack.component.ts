@@ -3,7 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@ang
 
 @Component({
   selector: 'app-pack',
-  template: `<img [@glowStatus]="status" (click)="buttonClick('draw')" src="assets/Cards/Back.png" [style.animation]="isDrawable? style : 'none'">`,
+  template: `<img [@glowStatus]="status" (click)="buttonClick()" src="assets/Cards/Back.png" [style.animation]="isDrawable? style : 'none'">`,
   // template: `<img [@glowStatus]="status" (@glowStatus.done)="onEnd($event)" (click)="buttonClick('draw')" src="assets/Cards/Back.png">`,
   styleUrls: ['./pack.component.scss'],
   animations: [
@@ -36,11 +36,11 @@ export class PackComponent implements OnInit {
   @Input() isDrawable: boolean;
   @Output() public choice:EventEmitter<string[]> = new EventEmitter();
 
-  buttonClick(buttonClicked:string): void {
+  buttonClick(): void {
     if( this.isDrawable ){
       //status = 'green';
       this.style = "none";
-      this.choice.emit( [buttonClicked, this.host.nativeElement.offsetTop, this.host.nativeElement.offsetLeft] );
+      this.choice.emit( ['draw', this.host.nativeElement.offsetTop, this.host.nativeElement.offsetLeft] );
     }
   }
 
