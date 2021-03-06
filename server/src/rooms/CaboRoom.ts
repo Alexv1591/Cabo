@@ -44,7 +44,7 @@ export class CaboRoom extends Room {
       else{
         console.log("GameOver");
         this.broadcast("GameOver",{});
-        this.logDiscardPile();
+        //this.logDiscardPile();
       }
     });
 
@@ -84,6 +84,10 @@ export class CaboRoom extends Room {
       //swap cards
       let card=players[0].swapCard(players[1].getCard(indexes[1]),indexes[0]);
       players[1].swapCard(card,indexes[1]);
+    });
+
+    this.onMessage("chat-message",(client,message)=>{
+      this.broadcast("chat-message",{player:client.sessionId,message:message});
     });
 
   }

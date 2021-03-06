@@ -4,4 +4,10 @@
     right: 0;
     top: 0;
     bottom: 0;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background:radial-gradient(#0C6339 10%,#08472A 90%);
+    user-select: none;
+    overflow: hidden;
 }

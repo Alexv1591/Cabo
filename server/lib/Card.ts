@@ -85,7 +85,7 @@ export class NormalCard extends Card{
     }
 
     private rankNumToLetter() {
-        if(this.rank.valueOf()<=10 && this.rank.valueOf()>1)
+        if(this.rank.valueOf()<=10)
             return this.rank.valueOf();
         switch (this.rank) {
             case RANK.JACK:
@@ -122,7 +122,7 @@ export class Joker extends Card{
     {
         super(RANK.JOKER);
         
-        super.img =Card.path_prefix+ "JOKER-1"+Card.path_postfix;
+        super.img =Card.path_prefix+ "JOKER-3"+Card.path_postfix;
     }
 
     public get val()

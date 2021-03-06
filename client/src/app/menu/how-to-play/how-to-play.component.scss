@@ -1,0 +1,22 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Potta+One&family=Amatic+SC&family=Lobster&family=Emilys+Candy&family=Caveat:wght@700&display=swap');
+
+
+.header{
+    font-size: 3em;
+    font-weight: 500;
+    font-style: italic;
+    margin-top: -.7em;
+    span{
+        color: rgb(124, 124, 124);
+        transition: text-shadow 0.4s;
+        &:hover {
+            text-shadow:1px 1px 10px limegreen;
+            transition: text-shadow 0.4s;
+        }
+    }
+}
+
+p{  
+    color: black;
+}
