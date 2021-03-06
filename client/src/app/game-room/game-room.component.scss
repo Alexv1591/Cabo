@@ -1,7 +1,19 @@
-:host{
+:host {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    transform: translate(-50%,-50%);
+    .spinner-grow {
+        color: green;
+        width: 64px;
+        height: 64px;
+    }
 }

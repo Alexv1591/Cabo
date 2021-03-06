@@ -41,9 +41,10 @@ export class RoomService {
 
   public async joinOrCreate(options?:any): Promise<Room>//i.e for options {players:5,AI:3}=> 5 players -> 3 of them are AI
   {
+    console.log(options);
     try{
       if(typeof options==="undefined")
-        this._room=await this._client.joinOrCreate("cabo_room",{players:2,AI:0});//TODO: CHANGE TO this._client.join("Cabo_room")
+        this._room=await this._client.join("cabo_room");//TODO: CHANGE TO this._client.join("Cabo_room")
       else{
         this.checkOptions(options);
         this._room=await this._client.create("cabo_room",options);
@@ -57,7 +58,7 @@ export class RoomService {
   }
 
   private checkOptions(options:any){
-    if(isNaN(options.player) || isNaN(options.AI) || options.player>5 || options.player<=0)
+    if(isNaN(options.players) || isNaN(options.AI) || options.players>5 || options.players<=0)
       throw "problem with the room options";
   }
 
