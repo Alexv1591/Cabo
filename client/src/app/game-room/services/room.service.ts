@@ -102,15 +102,9 @@ export class RoomService {
     this.room.send("to_discard",{card:cardPath});
   }
 
-  public async getOpponentCard(playerId:string,cardIndex:number){
+  public async getCard(playerId:string,cardIndex:number){
     this.room.send("get-card",{player:playerId,index:cardIndex});
     return new Promise((resolve,reject)=>this.waitForServerMessage(5,resolve,reject));
-  }
-
-  public async getMyCard(cardIndex:number)
-  {
-    this.room.send("get-card",{player:this._myId,index:cardIndex});
-    return new Promise((resolve,reject)=> this.waitForServerMessage(5,resolve,reject));
   }
 
   public sendChatMessage(message){
