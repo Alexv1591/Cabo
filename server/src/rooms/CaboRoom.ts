@@ -37,7 +37,7 @@ export class CaboRoom extends Room {
   private async loadMassageListener() {
 
     this.onMessage("nextTurn",(client, message) => {
-      if(this.turns<4){
+      if(this.turns<56){
         this.currentTurnIndex=((this.currentTurnIndex+1)%this.state.num_of_players);
         this.initPlayerTurn();
       }

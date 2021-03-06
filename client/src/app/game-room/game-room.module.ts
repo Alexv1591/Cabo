@@ -7,14 +7,14 @@ import { ChatComponent } from './chat/chat.component';
 import { GameRoomComponent } from './game-room.component';
 import { PlayerComponent } from './board/player/player.component';
 import { CardComponent } from './board/card/card.component';
-import { PackComponent } from './board/pack/pack.component';
-import { DiscardComponent } from './board/discard/discard.component';
-import { RevealedCardComponent } from './board/revealed-card/revealed-card.component';
 
 import { AddMessageComponent } from './chat/add-message/add-message.component'
 import { MessageComponent } from './chat/message/message.component';
 import { MessagesComponent } from './chat/messages/messages.component';
 import { FormsModule } from '@angular/forms';
+import { PackComponent } from './board/pack/pack.component';
+import { DiscardComponent } from './board/discard/discard.component';
+import { RevealedCardComponent } from './board/revealed-card/revealed-card.component';
 
 @NgModule({
   declarations: [
