@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Client, Room } from 'colyseus.js';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 const TO_MUCH_TIME:number=3125;
 
@@ -12,6 +13,7 @@ export class RoomService {
   private _serverMsg:any; 
   private _players:Array<string>;
   private _myId:string;
+  private _messages:Subject<any>=new BehaviorSubject<any>([]);
 
 
   constructor() { }
@@ -21,7 +23,16 @@ export class RoomService {
   public get myId() : string {  return this._myId;  }
 
   public get players() : string[] { return this._players;}
+
+  public get messages() { 
+    //return Observable.create((observer)=>{ 
+      //if(typeof this.room!="undefined")
+      return this._messages.asObservable();
+        //this.room.onMessage('chat-message',(message)=>observer.next(message))
+   // });
+   }
   
+   public
 
   public createClient() : void
   {
@@ -58,6 +69,8 @@ export class RoomService {
     this.room.onMessage("get-card",(card)=>{this._serverMsg=card;});
 
     this.room.onMessage("players", (players:Array<string>)=>this._players=players);
+
+    this.room.onMessage("chat-message",(message)=>this._messages.subscribe((messages)=>messages.push(message)));
   }
 
   public async nextTurn(){
@@ -98,6 +111,10 @@ export class RoomService {
   {
     this.room.send("get-card",{player:this._myId,index:cardIndex});
     return new Promise((resolve,reject)=> this.waitForServerMessage(5,resolve,reject));
+  }
+
+  public sendChatMessage(message){
+    this._room.send("chat-message",message);
   }
 
 

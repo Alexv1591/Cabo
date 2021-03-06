@@ -11,6 +11,10 @@ import { PackComponent } from './board/pack/pack.component';
 import { DiscardComponent } from './board/discard/discard.component';
 import { RevealedCardComponent } from './board/revealed-card/revealed-card.component';
 
+import { AddMessageComponent } from './chat/add-message/add-message.component'
+import { MessageComponent } from './chat/message/message.component';
+import { MessagesComponent } from './chat/messages/messages.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -21,11 +25,15 @@ import { RevealedCardComponent } from './board/revealed-card/revealed-card.compo
     CardComponent,
     PackComponent,
     DiscardComponent,
-    RevealedCardComponent
+    RevealedCardComponent,
+    AddMessageComponent,
+    MessageComponent,
+    MessagesComponent
   ],
   imports: [
     CommonModule,
-    GameRoomRoutingModule
+    GameRoomRoutingModule,
+    FormsModule
   ],
   exports: [
     GameRoomComponent
