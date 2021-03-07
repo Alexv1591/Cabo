@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { RoomService } from '../../services/room.service';
 
 @Component({
   selector: 'app-discard',
@@ -15,7 +16,7 @@ export class DiscardComponent implements OnInit {
   bottomCard = "";
   counter:number = 0;
 
-  constructor() {}
+  constructor( private room_service: RoomService) {}
   
   @Input() isDrawable: boolean;
   @Input() isDiscardable: boolean;
@@ -31,6 +32,8 @@ export class DiscardComponent implements OnInit {
   }
 
   public getTop(){
+    if( this.counter = 1 )
+      this.counter = 0;
     let tmp = this.topCard;
     this.topCard = this.bottomCard;
     return tmp;
@@ -45,6 +48,19 @@ export class DiscardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadMassages();
+  }
+
+  private async loadMassages() {
+    this.room_service.room.onMessage("discard-card", (message) => {
+      this.setTop(message);
+      console.log(message);
+    });
+    this.room_service.room.onMessage("discard-draw", (message) => {
+      this.topCard = message;
+      console.log(message);
+    });
+
   }
 
 }

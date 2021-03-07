@@ -95,14 +95,26 @@ export class BoardComponent implements OnInit, AfterViewInit {
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     let tmpCardRef = this.container.createComponent(componentFactory);
     tmpCardRef.instance.data = { path: tmpCardPath, top: $event.top, left: $event.left };
-    this.playerGlow(Glow.none);
-    this.room_service.room.send('swap-with-deck', { index: ix, card: this.cardRef.instance.path });//TO DO rename to take-from-deck
+    this.fromPackOrDiscard(ix);
     setTimeout(() => {  //TO DO animation
       this.discardComponent.setTop(tmpCardRef.instance.path);
       tmpCardRef.destroy();
       this.cardRef.destroy();
     }, 1000);
     this.room_service.nextTurn();
+  }
+
+  private fromPackOrDiscard(index:number){
+    switch (this.state) {
+      case states.FirstState.DRAW:
+        this.room_service.takeFromDeck(index);
+        break;
+      case states.FirstState.DUMPSTER_DIVE:
+        this.room_service.takeFromDiscard(index);
+        break;
+      default:
+        throw "fromPackOrDiscard state is invalid - " + this.state;
+    }
   }
 
   private async cardClick($event) { //{ containerID, playerID, top, left }
@@ -132,7 +144,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
         break;
       case states.ActionCard.SWAP_CARDS:
         alert("NOT DONE YET");
-
         if( this.goAgain ){
           console.log("GO AGAIN")
           this.goAgain = false;
@@ -175,6 +186,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   async drawCard() {
     console.log("drawCard");
+    this.state = states.FirstState.DRAW;
     this.roundStart = false;
     let heldCard = await this.room_service.drawCard();
     let topp = this.pack_discardRef.nativeElement.offsetTop;
@@ -186,6 +198,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   dumpsterDive(){
     console.log("dumpster-dive");
+    this.state = states.FirstState.DUMPSTER_DIVE;
     this.roundStart = false;
     let heldCard = this.discardComponent.getTop();
     let topp = this.pack_discardRef.nativeElement.offsetTop;

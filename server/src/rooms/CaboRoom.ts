@@ -82,7 +82,8 @@ export class CaboRoom extends Room {
       let player:Player=this.getPlayerById(client.sessionId);
       let discard=player.swapCard(Card.CardFromPathFactory(this.state.discard_pile.pop()),message.index);
       console.log(client.sessionId+" take from discard "+player.getCard(message.index));
-      this.clientAddToDiscard(client,discard);
+      //this.clientAddToDiscard(client,discard);
+      this.broadcast("discard-draw",discard.image,{except:client});
     });
 
     this.onMessage("swap-two-cards",(client,message)=>
@@ -106,7 +107,7 @@ export class CaboRoom extends Room {
       card=card.image;
     this.state.discard_pile.push(card);
     console.log(card+" added to discard pile");//debug
-    this.broadcast("discard-card",card.image,{except:client});
+    this.broadcast("discard-card",card,{except:client});
   }
 
   private getPlayerById(id:string){
