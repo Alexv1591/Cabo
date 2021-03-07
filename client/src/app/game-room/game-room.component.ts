@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Room } from 'colyseus.js';
 import { RoomService } from './services/room.service';
 
 @Component({
   selector: 'game-room',
   template: `
-              <ng-container *ngIf="flag; else loading"><app-board></app-board></ng-container>
+              <ng-container *ngIf="flag; else loading">
+                <app-board></app-board>
+                <app-chat></app-chat>
+              </ng-container>
               <ng-template #loading>
                 <div class="loader">
                   <div class="spinner-grow" role="status">
@@ -13,7 +15,6 @@ import { RoomService } from './services/room.service';
                   </div>
                 </div>
               </ng-template>
-              <app-chat></app-chat>
   `,
   styleUrls: ['./game-room.component.scss']
 })
@@ -24,19 +25,18 @@ export class GameRoomComponent implements OnInit {
 
   ngOnInit(): void {
     this.room_service.createClient();
-    this.createRoom();
+    this.joinOrCreateRoom();
+
   }
 
-  private async createRoom() {
-    let room: Room;
-    if (history.state.data.create) {
-      let pc = history.state.data.pc,
-          bc = history.state.data.bc;
-      room = await this.room_service.joinOrCreate({ players: pc, AI: bc });
-    }
-    else
-      room = await this.room_service.joinOrCreate();
-    this.loadMassages();
+  private async joinOrCreateRoom() {
+    let room;
+    if(history.state.data)
+      room = await this.room_service.joinOrCreate({ players: history.state.data.pc, AI: history.state.data.bc });
+    else 
+      room=await this.room_service.joinOrCreate();
+    if(this.room_service.room)
+      this.loadMassages();
   }
 
   private async loadMassages() {

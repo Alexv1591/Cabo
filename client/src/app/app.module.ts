@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GameRoomModule } from './game-room/game-room.module';
 import { MenuModule } from './menu/menu.module';
+import { AlertModule } from './_alert/alert.module';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { MenuModule } from './menu/menu.module';
     AppRoutingModule,
     NgbModule,
     GameRoomModule,
-    MenuModule
+    MenuModule,
+    AlertModule
   ],
   providers: [],
   bootstrap: [AppComponent]

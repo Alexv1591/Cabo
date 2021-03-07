@@ -16,6 +16,7 @@ import { PackComponent } from './board/pack/pack.component';
 import { DiscardComponent } from './board/discard/discard.component';
 import { RevealedCardComponent } from './board/revealed-card/revealed-card.component';
 
+
 @NgModule({
   declarations: [
     BoardComponent,

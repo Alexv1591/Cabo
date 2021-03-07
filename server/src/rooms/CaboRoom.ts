@@ -69,7 +69,7 @@ export class CaboRoom extends Room {
       client.send("get-card",card.image);
     });
 
-    this.onMessage("swap-with-deck",(client,message)=>{
+    this.onMessage("take-from-deck",(client,message)=>{
       let player:Player=this.getPlayerById(client.sessionId);
       let card=player.swapCard(Card.CardFromPathFactory(message.card),message.index);
       this.state.discard_pile.push(card.image);
