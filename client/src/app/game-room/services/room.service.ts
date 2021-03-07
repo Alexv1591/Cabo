@@ -39,7 +39,6 @@ export class RoomService {
 
   public async joinOrCreate(options?:any): Promise<Room>//i.e for options {players:5,AI:3}=> 5 players -> 3 of them are AI
   {
-    console.log(options);
     try{
       if(typeof options==="undefined")
         await this.joinRoom();
@@ -114,7 +113,7 @@ export class RoomService {
     }, timeout);
   }
 
-  public async drawCard(){
+  public async drawCard():Promise<string>{
     this.room.send("draw-card",{});
     return new Promise((resolve,reject)=>{
       this.waitForServerMessage(5,resolve,reject);
