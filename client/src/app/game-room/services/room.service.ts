@@ -97,7 +97,9 @@ export class RoomService {
 
   public async nextTurn(){
     this._serverMsg=undefined;
-    this.room.send("nextTurn", {});
+    // setTimeout(() => {
+      this.room.send("nextTurn", {});
+    // }, 30);
   }
 
   private async waitForServerMessage(timeout,resolve,reject){
@@ -133,6 +135,22 @@ export class RoomService {
   {
     this.room.send("get-card",{player:this._myId,index:cardIndex});
     return new Promise((resolve,reject)=> this.waitForServerMessage(5,resolve,reject));
+  }
+
+  public takeFromDeck(handIndex:number)
+  {
+    this.room.send("take-from-deck",{ card : this._serverMsg, index : handIndex });
+  }
+
+  public async takeFromDiscard(handIndex:number){
+    this.room.send("take-from-discard",{ index : handIndex});
+  }
+
+  public swapTwoCards(message:string)
+  {
+    let players=message.split(" ");
+    players.map((player)=>player.split(":"));
+    this.room.send("swap-two-cards",{players:[players[0][0],players[1][0]],cards:[parseInt(players[0][1]),parseInt(players[1][1])]});
   }
 
   public sendChatMessage(message){
