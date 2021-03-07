@@ -16,7 +16,7 @@ export enum ActionCard{
     NONE='none'
 }
 export function getActionState(card_path:string):ActionCard{
-    let match=card_path.match(/([1-9][1-3]?)/g)
+    let match=card_path.match(/([1-9][0-3]?)/g)
     if (!match || match.length!=1) 
         throw card_path+" is not a valid action card";
     let card_val=match.map((value)=>parseInt(value))[0];
