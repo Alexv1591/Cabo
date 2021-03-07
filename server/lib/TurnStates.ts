@@ -9,21 +9,21 @@ export enum SecondState{
 } 
 
 export enum ActionCard{
-    SELF_PEEK='peek-self',
+    PEEK_SELF='peek-self',
     PEEK_OPPONENT='peek-opponent',
     SWAP_CARDS='swap-cards',
     ULTIMATE_POWER='ultimate-power',
     NONE='none'
 }
 export function getActionState(card_path:string):ActionCard{
-    let match=card_path.match(/([1-9][1-3]?)/g)
+    let match=card_path.match(/([1-9][0-3]?)/g)
     if (!match || match.length!=1) 
         throw card_path+" is not a valid action card";
     let card_val=match.map((value)=>parseInt(value))[0];
     switch(card_val){
         case 7:
         case 8:
-            return ActionCard.SELF_PEEK;
+            return ActionCard.PEEK_SELF;
         case 9:
         case 10:
             return ActionCard.PEEK_OPPONENT;
@@ -35,3 +35,5 @@ export function getActionState(card_path:string):ActionCard{
             return ActionCard.NONE;
     }
 }
+
+// console.log( getActionState("CLUB-9.png") );

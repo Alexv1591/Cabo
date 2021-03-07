@@ -18,7 +18,9 @@ import { Component, Input, OnInit } from '@angular/core';
         height: '0px',
         width: '0px'
       })),
-      transition('* => *', animate('150ms ease-in-out')),
+      transition('in => out', animate('300ms ease-in-out')),
+      transition('out => in', animate('300ms ease-in-out')),
+      transition('out => out', animate('0ms')),
     ])
   ]
 })
@@ -31,15 +33,17 @@ export class RevealedCardComponent implements OnInit {
   top:any;
   left:any;
 
-
   constructor( ) { }
+
+  public toggleStatus(){
+    this.status = this.status=='in' ? 'out' : 'in';
+  }
 
   ngOnInit(): void {
     //console.log( this.data );
     this.path = this.data.path;
     this.top = this.data.top;
     this.left = this.data.left;
-    this.status = 'in';
   }
 
 }
