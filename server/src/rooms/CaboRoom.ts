@@ -21,7 +21,7 @@ export class CaboRoom extends Room {
     this.state.players.push(new Player(client));
     this.state.num_of_players++;
     console.log(client.id + " joined successfully to "+this.roomId);
-    if (!this.gameStart())
+    if (!this.hasReachedMaxClients())
       return;
     this.lock();
     this.initGame();
@@ -49,15 +49,15 @@ export class CaboRoom extends Room {
     });
 
     this.onMessage("to_discard",(client, message) => {
-      this.state.discard_pile.push(message.card);
-      console.log(message.card+" added to discard pile");//debug
+      this.clientAddToDiscard(client,message.card);
     });
 
     this.onMessage("draw-card",(client,message)=>{
       if(this.getCurrentTurnId()==client.sessionId){
-        let card=this.state.pack.draw()
+        let card=this.state.pack.draw();
         console.log(client.sessionId+" draw "+ card); 
         client.send("drawn-card",card.image);
+        //TODO: add broadcast to all the other players
       }
       else
         client.send("drawn-card","!");
@@ -75,6 +75,14 @@ export class CaboRoom extends Room {
       this.state.discard_pile.push(card.image);
       console.log(client.sessionId+" swap the card in index " + message.index);//debug
       console.log(card.toString()+" added to discard pile");//debug
+      //TODO: add broadcast to all the other players
+    });
+
+    this.onMessage("take-from-discard",(client,message)=>{
+      let player:Player=this.getPlayerById(client.sessionId);
+      let discard=player.swapCard(Card.CardFromPathFactory(this.state.discard_pile.pop()),message.index);
+      console.log(client.sessionId+" take from discard "+player.getCard(message.index));
+      this.clientAddToDiscard(client,discard);
     });
 
     this.onMessage("swap-two-cards",(client,message)=>
@@ -84,12 +92,21 @@ export class CaboRoom extends Room {
       //swap cards
       let card=players[0].swapCard(players[1].getCard(indexes[1]),indexes[0]);
       players[1].swapCard(card,indexes[1]);
+      //TODO: add broadcast to all the other players
     });
 
     this.onMessage("chat-message",(client,message)=>{
       this.broadcast("chat-message",{player:client.sessionId,message:message});
     });
 
+  }
+  
+  private clientAddToDiscard(client:Client,card:any){
+    if(typeof card==="object")
+      card=card.image;
+    this.state.discard_pile.push(card);
+    console.log(card+" added to discard pile");//debug
+    this.broadcast("discard-card",card.image,{except:client});
   }
 
   private getPlayerById(id:string){
@@ -131,7 +148,7 @@ export class CaboRoom extends Room {
     this.turns++;
     this.state.currentTurn=this.getCurrentTurnId();
     console.log("turns: "+this.turns+" player: "+this.state.currentTurn);
-    this.state.players[this.currentTurnIndex].client.send("my-turn",);
+    this.state.players[this.currentTurnIndex].client.send("my-turn",{});
   }
 
   private sendPlayers()

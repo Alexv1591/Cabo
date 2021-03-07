@@ -42,9 +42,9 @@ export class Card extends Schema{ // both NormalCard and Joker extends this clas
     {
         const card_regex=/^(CLUB|HEART|SPADE|DIAMOND)-([1-9][0-3]?)/;
         path=path.replace(this.path_prefix,"").replace(this.path_postfix,"");
-        if(!card_regex.test(path) && path!=="JOKER-1")
+        if(!card_regex.test(path) && path!=="JOKER-3")
             throw path + " is not legal card path";
-        if(path=="JOKER-1")
+        if(path=="JOKER-3")
             return new Joker();
         let suit=path.match(card_regex)[1],rank=parseInt(path.match(card_regex)[2]);
         switch(suit){
