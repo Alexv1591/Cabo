@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-card',
@@ -42,7 +42,7 @@ export class CardComponent implements OnInit {
     }
   }
 
-  constructor(private elRef:ElementRef) { }
+  constructor() { }
 
   ngOnInit(): void { }
 

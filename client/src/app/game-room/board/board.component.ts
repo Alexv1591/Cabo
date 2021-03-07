@@ -7,7 +7,7 @@ import { RevealedCardComponent } from './revealed-card/revealed-card.component';
 
 enum Glow {
   draw = 'green',
-  replace = 'green',
+  replace = 'lightgreen',
   remove = 'green',
   peek = 'yellow',
   swap = 'orange',
@@ -36,9 +36,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private placement_angles: number[];
   roundStart: boolean = false;
   canDiscard: boolean = false;
-  heldCard: any;
 
-  private state: 'keeping' | 'peeking' | 'swapping' | 'inactive' = 'inactive';
+  private state: 'peeking-self' | 'peeking-opponent' | 'peeking1' | 'peeking2' | 'swapping' | 'inactive' = 'inactive';
 
   constructor(private resolver: ComponentFactoryResolver, private host: ElementRef, private room_service: RoomService) {
     this.placement_angles = new Array<number>();
@@ -58,10 +57,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
       let data = { top: topp, left: leftp, rotation: rotatestr, id: this.room_service.players[i] };
       const componentFactory = this.resolver.resolveComponentFactory(PlayerComponent);
       let playerRef = this.container.createComponent(componentFactory);
-      const sub: Subscription = playerRef.instance.choice.subscribe(event => {
+      const sub1: Subscription = playerRef.instance.choice.subscribe(event => {
         this.cardClick(event);
       });
-      playerRef.onDestroy(() => { sub.unsubscribe(); console.log("Unsubscribing PlayerRef") });
+      playerRef.onDestroy(() => { sub1.unsubscribe(); console.log("Unsubscribing PlayerRef") });
+      const sub2: Subscription = playerRef.instance.keep.subscribe(event => {
+        this.keepCard(event);
+      });
+      playerRef.onDestroy(() => { sub2.unsubscribe(); console.log("Unsubscribing PlayerRef") });
       playerRef.instance.data = data;
       this.playerRefs.push(playerRef);
     }
@@ -86,63 +89,106 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }, 0);
   }
 
-  private cardClick(info: string) {
-    let handIx = info[0];
-    let playerId = info.slice(1);
-    console.log("cardClick - " + handIx + playerId);
-    switch (this.state) {
-      case 'keeping':
-        
-        break;
-      case 'peeking':
-        
-        break;
-      case 'swapping':
-        
-        break;
-    
-      default:
-        throw "cardClick() failed due to invalid state value";
-        break;
-    }
-
+  private async keepCard($event){
+    this.canDiscard = false;
+    let ix = $event.containerID;
+    let playerId = $event.playerID;
+    let tmpCardPath = await this.room_service.getCard(playerId, ix);
+    const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
+    let tmpCardRef = this.container.createComponent(componentFactory);
+    tmpCardRef.instance.data = { path: tmpCardPath, top: $event.top, left: $event.left };
+    this.playerGlow(Glow.none);
+    this.room_service.room.send('swap-with-deck', { index: ix, card: this.cardRef.instance.path });//TO DO rename to take-from-deck
+    setTimeout(() => {  //TO DO animation
+      this.discardComponent.setTop(tmpCardRef.instance.path);
+      tmpCardRef.destroy();
+      this.cardRef.destroy();
+    }, 1000);
+    this.room_service.nextTurn();
   }
 
-  receiveMessage($event): void {
-    this.roundStart = false;
-    let msg = $event[0];
-    switch (msg) {
-      case 'draw':
-        this.newCard();
-        break;
-      case 'dumpster-dive':
-        console.log("dumpster-dive");
-        break;
+  private async cardClick($event) { //{ containerID, playerID, top, left }
+    this.canDiscard = false;
+    let ix = $event.containerID;
+    let playerId = $event.playerID;
+    let tmpCardPath = await this.room_service.getCard(playerId, ix);
+    const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
+    let tmpCardRef = this.container.createComponent(componentFactory);
+    tmpCardRef.instance.data = { path: tmpCardPath, top: $event.top, left: $event.left };
+    this.specialCard( tmpCardRef );
+  }
 
-      case 'discard':
-        this.discard();
+  private specialCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){
+    switch (this.state) {
+      case 'peeking-self':
+        setTimeout(() => {  //TO DO animation
+          tmpCardRef.destroy();
+        }, 1000);
+        this.playerGlow( Glow.none );
+        this.room_service.nextTurn();
+        break;
+      case 'peeking-opponent':
+        setTimeout(() => {  //TO DO animation
+          tmpCardRef.destroy();
+        }, 1000);
+        this.opponentGlow( Glow.none );
+        this.room_service.nextTurn();
+        break;
+      case 'peeking1':
+      case 'peeking2':
+        setTimeout(() => {  //TO DO animation
+          tmpCardRef.destroy();
+        }, 1000);
+        if( this.state = 'peeking2'){
+          this.state = 'peeking1';
+          return;
+        }
+        this.playerGlow( Glow.none );
+        this.opponentGlow( Glow.none );
+        this.room_service.nextTurn();
+        break;
+      case 'swapping':
+
         break;
 
       default:
-        throw "board received invalid message";
+        throw "cardClick() failed due to invalid state value -- " + this.state;
         break;
     }
 
+    this.state = 'inactive';
+  }
+
+  async drawCard() {
+    console.log("drawCard");
+    this.roundStart = false;
+
+    let heldCard = await this.room_service.drawCard();
+    let topp = this.pack_discardRef.nativeElement.offsetTop;
+    let leftp = this.pack_discardRef.nativeElement.offsetLeft;
+
+    this.showCard( heldCard, topp, leftp );
+    this.keepOrDiscard();
+  }
+
+  dumpsterDive(){
+    console.log("dumpster-dive");
+    this.roundStart = false;
+    let heldCard = this.discardComponent.getTop();
+    let topp = this.pack_discardRef.nativeElement.offsetTop;
+    let leftp = this.pack_discardRef.nativeElement.offsetLeft;
+    this.showCard( heldCard, topp, leftp );
+    this.playerGlow( Glow.replace );
   }
 
   private startTurn() {
-    this.roundStart = true;
     this.packGlow(Glow.draw);
   }
 
-  private async newCard() {
-    this.heldCard = await this.room_service.drawCard();
-    let topp = this.pack_discardRef.nativeElement.offsetTop;
-    let leftp = this.pack_discardRef.nativeElement.offsetLeft;
+  private async showCard( path:any, top:number, left:number ){
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     this.cardRef = this.container.createComponent(componentFactory);
-    this.cardRef.instance.data = { path: this.heldCard, top: topp, left: leftp };
-    this.keepOrDiscard();
+    this.cardRef.instance.data = { path: path, top: top, left: left };
   }
 
   private keepOrDiscard() {
@@ -150,17 +196,27 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.discardGlow(Glow.remove);
   }
 
+  clickedDiscard() {
+    this.canDiscard = false;
+    this.playerGlow(Glow.none);
+    this.discardComponent.setTop(this.cardRef.instance.data.path);
+    this.room_service.discardCard(this.cardRef.instance.data.path);
+    this.resolveCard(this.trimPath(this.cardRef.instance.data.path));
+    //TO DO animation
+    this.cardRef.destroy();
+  }
+
   private resolveCard(card: string) {
     console.log(card);
     switch (card) {
       case '7':
       case '8':
-        this.state = 'peeking';
+        this.state = 'peeking-self';
         this.playerGlow(Glow.peek);
         break;
       case '9':
       case '10':
-        this.state = 'peeking';
+        this.state = 'peeking-opponent';
         this.opponentGlow(Glow.peek);
         break;
       case '11':
@@ -169,7 +225,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
         this.opponentGlow(Glow.swap);
         break;
       case '12':
-        this.state = 'peeking';
+        this.state = 'peeking2';
         this.playerGlow(Glow.peek);
         this.opponentGlow(Glow.peek);
         // this.state = 'swapping';
@@ -177,46 +233,23 @@ export class BoardComponent implements OnInit, AfterViewInit {
         // this.opponentGlow(Glow.swap);
         break;
       default:
+        this.room_service.nextTurn();
         break;
     }
 
   }
 
-  private discard() {
-    this.canDiscard = false;
-    this.playerGlow(Glow.none);
-    this.discardComponent.setTop(this.cardRef.instance.data.path);
-    this.room_service.discardCard(this.cardRef.instance.data.path);
-    this.resolveCard(this.trimPath(this.cardRef.instance.data.path))
-
-    //TO DO animation
-    this.cardRef.destroy();
-  }
-
-  private trimPath(path: any): string {
-    let _pre = /-/gi;
-    let _post = /.png/gi;
-    let tmp = String(path);
-    tmp = tmp.slice(-6);
-    tmp = tmp.replace(_pre, "");
-    tmp = tmp.replace(_post, "");
-    return tmp;
-  }
-
   private playerGlow(mode: string) {
-    console.log("playerGlow(" + mode + ")")
     this.playerRefs[0].instance.setGlow(mode);
-
   }
 
   private opponentGlow(mode: string) {
-    for (let i = 1; i < this.playerRefs.length; i++) {
+    for (let i = 1; i < this.playerRefs.length; i++)
       this.playerRefs[i].instance.setGlow(mode);
-    }
   }
 
   private packGlow(mode: string) {
-
+    this.roundStart = true;
   }
 
   private discardGlow(mode: string) {
@@ -227,6 +260,16 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.room_service.room.onMessage("my-turn", (message) => {
       this.startTurn();
     });
+  }
+
+  private trimPath(path: any): string {
+    let _pre = /-/gi;
+    let _post = /.png/gi;
+    let tmp = String(path);
+    tmp = tmp.slice(-6);
+    tmp = tmp.replace(_pre, "");
+    tmp = tmp.replace(_post, "");
+    return tmp;
   }
 
 }

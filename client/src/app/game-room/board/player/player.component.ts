@@ -25,8 +25,10 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   public isEmpty: Array<boolean>;
   private playerId: string;
   private isClickable: boolean = false;
+  private canKeep:boolean = false;
   
-  @Output()  public choice:EventEmitter<string> = new EventEmitter();
+  @Output()  public choice:EventEmitter<any> = new EventEmitter();
+  @Output()  public keep:EventEmitter<any> = new EventEmitter();
 
   constructor(private resolver: ComponentFactoryResolver, private room_service: RoomService) {
     this.isEmpty = [false, false, false, false, true, true, true, true];
@@ -34,8 +36,17 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   }
   
   containerClick(containerId:string): void {
-    if( this.isClickable && !this.isEmpty[ Number(containerId) ] )
-      this.choice.next( containerId+this.playerId );
+    let ix = Number(containerId);
+    let topp = this.container.nativeElement.offsetTop;
+    let leftp = this.container.nativeElement.offsetTop;
+    console.log( "containderClick top:" + topp + " left:" + leftp );
+    if( this.canKeep ){
+      this.canKeep = false;
+      this.keep.next( { containerID:ix, playerID:this.playerId, top:topp, left:leftp } );
+      return;
+    }
+    if( this.isClickable && !this.isEmpty[ ix ] )
+      this.choice.next( { containerID:ix, playerID:this.playerId, top:topp, left:leftp } );
   }
 
   public get id(){
@@ -46,15 +57,14 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 
   public setGlow(color: string) {
     this.isClickable = color!='none';
+    if( color =='lightgreen' ){ //TO DO create lightgreen
+      this.canKeep = true;
+      color = 'green';
+    }
+    else
+      this.canKeep = false;
     for (let i = 0; i < this.cardRefs.length; i++)
       this.cardRefs[i].instance.setGlow(color);
-  }
-
-  public removeGlow() {
-    this.isClickable = false;
-    for (let i = 0; i < this.cardRefs.length; i++) {
-      this.cardRefs[i].instance.setGlow( 'none' );
-    }
   }
 
   ngAfterViewInit(): void {

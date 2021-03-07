@@ -5,13 +5,13 @@
     <div #pack_discard class="pack_discard">
         <div class="row">
             <div #pack id="pack" class="col-">
-                <app-pack [isDrawable]="roundStart" (choice)="receiveMessage($event)"></app-pack>
+                <app-pack [isDrawable]="roundStart" (draw)="drawCard()"></app-pack>
             </div>
             <div class="col-">
                 STICK
             </div>
             <div class="discard col-">
-                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard" (choice)="receiveMessage($event)"></app-discard>
+                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard" (dive)="dumpsterDive()" (discard)="clickedDiscard()"></app-discard>
             </div>
         </div>
     </div>

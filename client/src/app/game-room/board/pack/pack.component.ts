@@ -3,8 +3,8 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@ang
 
 @Component({
   selector: 'app-pack',
-  template: `<img [@glowStatus]="status" (click)="buttonClick()" src="assets/Cards/Back.png" [style.animation]="isDrawable? style : 'none'">`,
-  // template: `<img [@glowStatus]="status" (@glowStatus.done)="onEnd($event)" (click)="buttonClick('draw')" src="assets/Cards/Back.png">`,
+  template: `<img [@glowStatus]="status" (click)="click()" src="assets/Cards/Back.png" [style.animation]="isDrawable? style : 'none'">`,
+  // template: `<img [@glowStatus]="status" (@glowStatus.done)="onEnd($event)" (click)="click('draw')" src="assets/Cards/Back.png">`,
   styleUrls: ['./pack.component.scss'],
   animations: [
     trigger('glowStatus', [
@@ -34,28 +34,17 @@ export class PackComponent implements OnInit {
   constructor( private host:ElementRef ) { }
 
   @Input() isDrawable: boolean;
-  @Output() public choice:EventEmitter<string[]> = new EventEmitter();
+  @Output() public draw:EventEmitter<any> = new EventEmitter();
 
-  buttonClick(): void {
+  click(): void {
     if( this.isDrawable ){
-      //status = 'green';
       this.style = "none";
-      this.choice.emit( ['draw', this.host.nativeElement.offsetTop, this.host.nativeElement.offsetLeft] );
-    }
-  }
-
-  onEnd( event ){
-    console.log(status);
-    status = 'none';
-    if( this.isDrawable ){
-      console.log(status);
-      setTimeout(() => { status = 'green'; console.log(status) }, 1000);
+      this.draw.emit();
     }
   }
 
   ngOnInit(): void {
-    // if( this.isDrawable )
-      setTimeout(() => { status = 'green'; }, 1000);
+    setTimeout(() => { status = 'green'; }, 1000);
   }
 
 }
