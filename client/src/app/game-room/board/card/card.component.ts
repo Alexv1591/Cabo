@@ -14,6 +14,13 @@ import { Component, Input, OnInit } from '@angular/core';
         transform: 'scale(1.1,1.1)',
         boxShadow: '0 10px 6px -6px #777'
       })),
+      state('hide', style({
+        opacity: '0',
+        overflow: 'hidden',
+        height: '0px',
+        width: '0px'
+      })),
+      transition('none => hide', animate('0ms')),
       transition('* => *', animate('500ms ease'))
     ])
   ]
@@ -24,7 +31,7 @@ export class CardComponent implements OnInit {
 
   glowStyle: string = 'none';
 
-  status: 'none' | 'float' = 'none';
+  status: 'none' | 'float' | 'hide' = 'none';
 
   public setGlow( color: string ){
     switch (color) {
@@ -45,7 +52,15 @@ export class CardComponent implements OnInit {
     }
   }
 
-  public toggleStatus(){
+  public toggleHide(){
+    console.log("toggling card status");
+    this.status = 'hide';
+    setTimeout( () => {
+      this.status='none';
+    }, 2000);
+  }
+
+  public toggleFloat(){
     console.log("toggling card status");
     this.status = 'float';
     setTimeout( () => {
