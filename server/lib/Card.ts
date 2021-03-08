@@ -25,7 +25,7 @@ export enum RANK {
 
 export class Card extends Schema{ // both NormalCard and Joker extends this class
     //@type("string")
-    imagePath: string = "";
+    private imagePath: string = "";
     protected static path_prefix="assets/Cards/";
     protected static path_postfix=".png";
     constructor(private _rank:RANK)
