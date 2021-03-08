@@ -18,9 +18,9 @@ import { Component, Input, OnInit } from '@angular/core';
         height: '0px',
         width: '0px'
       })),
-      transition('in => out', animate('300ms ease-in-out')),
-      transition('out => in', animate('300ms ease-in-out')),
-      transition('out => out', animate('0ms')),
+      transition('in => out', animate('200ms ease')),
+      transition('out => in', animate('300ms ease')),
+      //transition('out => out', animate('0ms')),
     ])
   ]
 })
@@ -40,7 +40,6 @@ export class RevealedCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //console.log( this.data );
     this.path = this.data.path;
     this.top = this.data.top;
     this.left = this.data.left;

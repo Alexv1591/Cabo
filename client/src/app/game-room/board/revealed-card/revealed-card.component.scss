@@ -1,9 +1,11 @@
 img{
     position: absolute;
+    display: flex;
     border-radius: 7px;
     width: 135px; 
     height: 210px;
     z-index: 2;
     transform: translate(-100%,-50%);
     box-shadow: rgb(27, 27, 27) -10px 15px 13px 11px;
+    transition: all 1s ease;
 }

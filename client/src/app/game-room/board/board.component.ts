@@ -179,21 +179,27 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   private peekCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){
-    tmpCardRef.instance.toggleStatus();
-    setTimeout(() => {  //TO DO animation
+    setTimeout(() => {
+      tmpCardRef.instance.toggleStatus();
+    }, 10);
+    setTimeout(() => {
+      tmpCardRef.instance.toggleStatus();
+    }, 2000);
+    setTimeout(() => {
       tmpCardRef.destroy();
-    }, 1000);
+    }, 2500);
   }
 
   async drawCard() {
-    console.log("drawCard");
     this.state = states.FirstState.DRAW;
     this.roundStart = false;
     let heldCard = await this.room_service.drawCard();
     let topp = this.pack_discardRef.nativeElement.offsetTop;
     let leftp = this.pack_discardRef.nativeElement.offsetLeft;
     this.cardRef = this.showCard( heldCard, topp, leftp );
-    this.cardRef.instance.toggleStatus();
+    setTimeout(() => {
+      this.cardRef.instance.toggleStatus();
+    }, 10);
     this.keepOrDiscard();
   }
 
@@ -205,7 +211,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let topp = this.pack_discardRef.nativeElement.offsetTop;
     let leftp = this.pack_discardRef.nativeElement.offsetLeft;
     this.cardRef = this.showCard( heldCard, topp, leftp );
-    this.cardRef.instance.toggleStatus();
+    setTimeout(() => {
+      this.cardRef.instance.toggleStatus();
+    }, 10);
     this.playerGlow( Glow.keep );
   }
 
@@ -217,8 +225,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     let tmpCardRef = this.container.createComponent(componentFactory);
     tmpCardRef.instance.data = { path: path, top: top, left: left };
-    // this.cardRef = this.container.createComponent(componentFactory);
-    // this.cardRef.instance.data = { path: path, top: top, left: left };
     return tmpCardRef;
   }
 
@@ -293,14 +299,5 @@ export class BoardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private trimPath(path: any): string {
-    let _pre = /-/gi;
-    let _post = /.png/gi;
-    let tmp = String(path);
-    tmp = tmp.slice(-6);
-    tmp = tmp.replace(_pre, "");
-    tmp = tmp.replace(_post, "");
-    return tmp;
-  }
-
+  
 }

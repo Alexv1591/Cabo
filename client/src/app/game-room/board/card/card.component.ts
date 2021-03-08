@@ -8,7 +8,6 @@ import { Component, Input, OnInit } from '@angular/core';
   animations: [
     trigger('floatStatus', [
       state('none', style({
-
       })),
       state('float', style({
         transform: 'scale(1.1,1.1)',
@@ -53,7 +52,6 @@ export class CardComponent implements OnInit {
   }
 
   public toggleHide(){
-    console.log("toggling card status");
     this.status = 'hide';
     setTimeout( () => {
       this.status='none';
@@ -61,7 +59,6 @@ export class CardComponent implements OnInit {
   }
 
   public toggleFloat(){
-    console.log("toggling card status");
     this.status = 'float';
     setTimeout( () => {
       this.status='none';
