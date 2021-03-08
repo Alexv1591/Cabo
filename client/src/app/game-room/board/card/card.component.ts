@@ -3,15 +3,18 @@ import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-card',
-  template: `<img [@glowStatus]="status" *ngIf="!empty" src="assets/Cards/Back.png" [style.animation]="glowStyle">`,
+  template: `<img [@floatStatus]="status" *ngIf="!empty" src="assets/Cards/Back.png" [style.animation]="glowStyle">`,
   styleUrls: ['./card.component.scss'],
   animations: [
-    trigger('glowStatus', [
-      state('in', style({
+    trigger('floatStatus', [
+      state('none', style({
+
       })),
-      state('out', style({
+      state('float', style({
+        transform: 'scale(1.1,1.1)',
+        boxShadow: '0 10px 6px -6px #777'
       })),
-      transition('* => *', animate('300ms ease'))
+      transition('* => *', animate('500ms ease'))
     ])
   ]
 })
@@ -21,7 +24,7 @@ export class CardComponent implements OnInit {
 
   glowStyle: string = 'none';
 
-  status: 'in' | 'out' = 'out';
+  status: 'none' | 'float' = 'none';
 
   public setGlow( color: string ){
     switch (color) {
@@ -38,8 +41,16 @@ export class CardComponent implements OnInit {
         this.glowStyle = "none";
         break;
       default:
-        throw "Card can't set glow -- invalid value provided"
+        throw "Card can't set glow, invalid value provided -- '" + color + "'";
     }
+  }
+
+  public toggleStatus(){
+    console.log("toggling card status");
+    this.status = 'float';
+    setTimeout( () => {
+      this.status='none';
+    }, 2000);
   }
 
   constructor() { }

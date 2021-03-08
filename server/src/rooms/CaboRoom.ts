@@ -75,7 +75,7 @@ export class CaboRoom extends Room {
       this.state.discard_pile.push(card.image);
       console.log(client.sessionId + " swap the card in index " + message.index);//debug
       console.log(card.toString() + " added to discard pile");//debug
-      this.broadcast("player-take-from-deck", { player: client.sessionId, index: message.index }, { except: client });//notify other players about the move
+      this.broadcast("player-take-from-deck", { player: client.sessionId, index: message.index, card:card.image }, { except: client });//notify other players about the move
     });
 
     this.onMessage("take-from-discard", (client, message) => {

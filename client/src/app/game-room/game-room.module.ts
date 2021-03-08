@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { GameRoomRoutingModule } from './game-room-routing.module';
 import { BoardComponent } from './board/board.component';
@@ -34,6 +35,7 @@ import { RevealedCardComponent } from './board/revealed-card/revealed-card.compo
   imports: [
     CommonModule,
     GameRoomRoutingModule,
+    BrowserAnimationsModule,
     FormsModule
   ],
   exports: [

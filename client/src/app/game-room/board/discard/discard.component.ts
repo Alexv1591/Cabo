@@ -53,12 +53,16 @@ export class DiscardComponent implements OnInit {
 
   private async loadMassages() {
     this.room_service.room.onMessage("discard-card", (message) => {
+      console.log("discard-card" + message);
       this.setTop(message);
-      console.log(message);
     });
     this.room_service.room.onMessage("discard-draw", (message) => {
+      console.log("discard-draw" + message);
       this.topCard = message;
-      console.log(message);
+    });
+    this.room_service.room.onMessage("player-take-from-deck", (message) => {
+      console.log("player-take-from-deck" + message.card);
+      this.setTop(message.card);
     });
 
   }

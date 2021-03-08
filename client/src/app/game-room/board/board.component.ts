@@ -116,6 +116,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
       default:
         throw "fromPackOrDiscard state is invalid - " + this.state;
     }
+    this.state = states.ActionCard.NONE;
   }
 
   private async cardClick($event) { //{ containerID, playerID, top, left }
