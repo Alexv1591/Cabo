@@ -93,6 +93,16 @@ export class RoomService {
     this.room.onMessage("players", (players:Array<string>)=>this._players=players);
 
     this.room.onMessage("chat-message",(message)=>this._messages.subscribe((messages)=>messages.push(message)));
+
+    this.room.onMessage("my-end-point",(message)=>console.log(message));
+
+    this.room.onMessage("winner",(message)=>console.log("winner:"+message.winner+" points:"+message.points));
+
+    this.room.onMessage("you-win",(message)=>console.log("I WIN!"));
+  }
+
+  public async cabo(){
+    this.room.send("cabo",);
   }
 
   public async nextTurn(){
