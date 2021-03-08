@@ -89,6 +89,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   private async keepCard($event){
     this.canDiscard = false;
+    this.playerGlow( Glow.none );
     let ix = $event.containerID;
     let playerId = $event.playerID;
     let tmpCardPath = await this.room_service.getCard(playerId, ix);
@@ -123,7 +124,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let playerId = $event.playerID;
     if( this.state == states.ActionCard.SWAP_CARDS ){
       this.removeGlow( playerId );
-      this.swapString += playerId+':'+ix;
+      this.swapString += playerId+':'+ix+' ';
     }
 
     let tmpCardPath = await this.room_service.getCard(playerId, ix);
@@ -143,7 +144,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
         this.opponentGlow( Glow.none );
         break;
       case states.ActionCard.SWAP_CARDS:
-        alert("NOT DONE YET");
         if( this.goAgain ){
           console.log("GO AGAIN")
           this.goAgain = false;
@@ -173,7 +173,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   private swapCards(){
-    //talk to server
+    this.room_service.swapTwoCards( this.swapString.trim() );
     this.swapString = "";
   }
 

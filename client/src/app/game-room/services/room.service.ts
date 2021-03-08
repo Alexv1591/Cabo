@@ -142,8 +142,8 @@ export class RoomService {
 
   public swapTwoCards(message:string)
   {
-    let players=message.split(" ");
-    players.map((player)=>player.split(":"));
+    let players:any=message.split(" ");
+    players = players.map((player)=>player.split(":"));
     this.room.send("swap-two-cards",{players:[players[0][0],players[1][0]],cards:[parseInt(players[0][1]),parseInt(players[1][1])]});
   }
 
