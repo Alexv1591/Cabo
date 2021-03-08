@@ -85,6 +85,31 @@ export class BoardComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.generate(this.player_count, Math.round(this.host.nativeElement.offsetHeight * 0.5));
     }, 0);
+    setTimeout(() => {
+      this.firstReveal();
+    }, 500);
+  }
+
+  private async firstReveal(){
+    
+    let tmpCardPath0 = await this.room_service.getCard(this.playerRefs[0].instance.id, 0);
+    let tmpCardRef0 = this.showCard( tmpCardPath0, 500, 450 );
+    let tmpCardPath1 = await this.room_service.getCard(this.playerRefs[0].instance.id, 1);
+    let tmpCardRef1 = this.showCard( tmpCardPath1, 500, 650 );
+
+    setTimeout(() => {
+      tmpCardRef0.instance.toggleStatus();
+    }, 500);
+    tmpCardRef1.instance.toggleStatus();
+
+    setTimeout(() => {
+      tmpCardRef0.instance.toggleStatus();
+      tmpCardRef1.instance.toggleStatus();
+    }, 4000);
+    setTimeout(() => {
+      tmpCardRef0.destroy();
+      tmpCardRef1.destroy();
+    }, 5000);
   }
 
   private async keepCard($event){
@@ -134,7 +159,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   private specialCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){
-    console.log( "my state is " + String(this.state) );
     switch (this.state) {
       case states.ActionCard.PEEK_SELF:
         this.peekCard( tmpCardRef );
@@ -146,7 +170,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
         break;
       case states.ActionCard.SWAP_CARDS:
         if( this.goAgain ){
-          console.log("GO AGAIN")
           this.goAgain = false;
           return;
         }
@@ -166,7 +189,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
         this.goAgain = true;
         return;
       default:
-        throw "cardClick() failed due to invalid state value -- " + this.state;
+        throw "specialCard() failed due to invalid state value -- " + this.state;
         break;
     }
     this.state = states.ActionCard.NONE;

@@ -73,6 +73,19 @@ export class PlayerComponent implements OnInit, AfterViewInit {
       this.createCardholders();
       this.playerId = this.data.id;
     }, 0);
+    this.firstRevealHide();//TO DO add to room service message game start
+  }
+
+  private firstRevealHide(){
+    setTimeout(() => {
+      this.cardRefs[0].instance.toggleHide(true);
+      this.cardRefs[1].instance.toggleHide(true);
+    }, 500);
+    setTimeout(() => {
+      console.log("do i ever see this")
+      this.cardRefs[0].instance.toggleHide(false);
+      this.cardRefs[1].instance.toggleHide(false);
+    }, 5000);
   }
 
   private setPosition(top: string, left: string, rotation: string): void {
@@ -90,9 +103,14 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit(): void { this.loadMassages(); }
+  ngOnInit(): void {
+    this.loadMassages();
+  }
 
   private async loadMassages() {
+    this.room_service.room.onMessage("my-turn", (message) => {
+      // this.firstRevealHide(); //TO DO remove from init
+    });
     this.room_service.room.onMessage("card-clicked", (message) => {
       if (this.playerId == message.player)
         this.cardRefs[message.index].instance.toggleFloat();
