@@ -4,9 +4,9 @@ import { Player } from "../../lib/Player";
 import { CaboState } from "./State/CaboState";
 
 export class CaboRoom extends Room {
-  private currentTurnIndex:number;
-  private turns:number=0;
-  constructor(){
+  private currentTurnIndex: number;
+  private turns: number = 0;
+  constructor() {
     super();
   }
   onCreate(options: any) {
@@ -20,8 +20,8 @@ export class CaboRoom extends Room {
   onJoin(client: Client, options: any) {
     this.state.players.push(new Player(client));
     this.state.num_of_players++;
-    console.log(client.id + " joined successfully to "+this.roomId);
-    if (!this.gameStart())
+    console.log(client.id + " joined successfully to " + this.roomId);
+    if (!this.hasReachedMaxClients())
       return;
     this.lock();
     this.initGame();
@@ -36,66 +36,74 @@ export class CaboRoom extends Room {
 
   private async loadMassageListener() {
 
-    this.onMessage("nextTurn",(client, message) => {
-      if(this.turns<4){
-        this.currentTurnIndex=((this.currentTurnIndex+1)%this.state.num_of_players);
+    this.onMessage("nextTurn", (client, message) => {
+      if (this.turns < 4) {
+        this.currentTurnIndex = ((this.currentTurnIndex + 1) % this.state.num_of_players);
         this.initPlayerTurn();
       }
-      else{
+      else {
         console.log("GameOver");
-        this.broadcast("GameOver",{});
+        this.broadcast("GameOver", {});
         //this.logDiscardPile();
       }
     });
 
-    this.onMessage("to_discard",(client, message) => {
+    this.onMessage("to_discard", (client, message) => {
       this.state.discard_pile.push(message.card);
-      console.log(message.card+" added to discard pile");//debug
+      console.log(message.card + " added to discard pile");//debug
+      this.broadcast("discard-card", message.card, { except: client });
+
     });
 
-    this.onMessage("draw-card",(client,message)=>{
-      if(this.getCurrentTurnId()==client.sessionId){
-        let card=this.state.pack.draw()
-        console.log(client.sessionId+" draw "+ card); 
-        client.send("drawn-card",card.image);
-      }
-      else
-        client.send("drawn-card","!");
+    this.onMessage("draw-card", (client, message) => {
+      let card = this.state.pack.draw();
+      console.log(client.sessionId + " draw " + card);
+      client.send("drawn-card", card.image);
+      this.broadcast("player-draw-card", { id: client.sessionId }, { except: client });//notify other players about the move
     });
 
-    this.onMessage("get-card",(client,message)=>{
-      let player:Player=this.getPlayerById(message.player);
-      let card=player.getCard(message.index);
-      client.send("get-card",card.image);
+    this.onMessage("get-card", (client, message) => {
+      let player: Player = this.getPlayerById(message.player);
+      let card = player.getCard(message.index);
+      client.send("get-card", card.image);
+      this.broadcast("card-clicked", message, { except: client });
     });
 
-    this.onMessage("take-from-deck",(client,message)=>{
-      let player:Player=this.getPlayerById(client.sessionId);
-      let card=player.swapCard(Card.CardFromPathFactory(message.card),message.index);
+    this.onMessage("take-from-deck", (client, message) => {
+      let player: Player = this.getPlayerById(client.sessionId);
+      let card = player.swapCard(Card.CardFromPathFactory(message.card), message.index);
       this.state.discard_pile.push(card.image);
-      console.log(client.sessionId+" swap the card in index " + message.index);//debug
-      console.log(card.toString()+" added to discard pile");//debug
+      console.log(client.sessionId + " swap the card in index " + message.index);//debug
+      console.log(card.toString() + " added to discard pile");//debug
+      this.broadcast("player-take-from-deck", { player: client.sessionId, index: message.index }, { except: client });//notify other players about the move
     });
 
-    this.onMessage("swap-two-cards",(client,message)=>
-    { //message template => {players:[**player1 id**,**player2 id**],cards:[**card index for player1**,**card index for player2**]}
-      let players=message.players.map((value:any)=>this.getPlayerById(value));
-      let indexes=message.cards;
+    this.onMessage("take-from-discard", (client, message) => {
+      let player: Player = this.getPlayerById(client.sessionId);
+      let discard = player.swapCard(Card.CardFromPathFactory(this.state.discard_pile.pop()), message.index);
+      console.log(client.sessionId + " take from discard " + player.getCard(message.index));
+      this.broadcast("discard-draw", discard.image, { except: client });//notify other players about the move 
+    });
+
+    this.onMessage("swap-two-cards", (client, message) => { //message template => {players:[**player1 id**,**player2 id**],cards:[**card index for player1**,**card index for player2**]}
+      let players = message.players.map((value: any) => this.getPlayerById(value));
+      let indexes = message.cards;
       //swap cards
-      let card=players[0].swapCard(players[1].getCard(indexes[1]),indexes[0]);
-      players[1].swapCard(card,indexes[1]);
+      let card = players[0].swapCard(players[1].getCard(indexes[1]), indexes[0]);
+      players[1].swapCard(card, indexes[1]);
+      this.broadcast("player-swap-two-cards", message, { except: client });//notify other players about the move
     });
 
-    this.onMessage("chat-message",(client,message)=>{
-      this.broadcast("chat-message",{player:client.sessionId,message:message});
+    this.onMessage("chat-message", (client, message) => {
+      this.broadcast("chat-message", { player: client.sessionId, message: message });
     });
 
   }
 
-  private getPlayerById(id:string){
-    let player=this.state.players.find((player:any)=>{ return id===player.client.sessionId;});
-    if(typeof player==="undefined")
-      throw id +" is not a player in this game";
+  private getPlayerById(id: string) {
+    let player = this.state.players.find((player: any) => { return id === player.client.sessionId; });
+    if (typeof player === "undefined")
+      throw id + " is not a player in this game";
     return player;
   }
 
@@ -119,27 +127,26 @@ export class CaboRoom extends Room {
     }
 
     for (let player of this.state.players) {
-      console.log(player+"")
+      console.log(player + "")
     }
     this.sendPlayers()
-    this.currentTurnIndex=this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
+    this.currentTurnIndex = this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
     this.broadcast('game-start',);//TODO: send to card from the hand for every player
     this.initPlayerTurn();
   }
 
-  private initPlayerTurn(){
+  private initPlayerTurn() {
     this.turns++;
-    this.state.currentTurn=this.getCurrentTurnId();
-    console.log("turns: "+this.turns+" player: "+this.state.currentTurn);
-    this.state.players[this.currentTurnIndex].client.send("my-turn",);
+    this.state.currentTurn = this.getCurrentTurnId();
+    console.log("turns: " + this.turns + " player: " + this.state.currentTurn);
+    this.state.players[this.currentTurnIndex].client.send("my-turn", {});//,{ afterNextPatch : true });  
   }
 
-  private sendPlayers()
-  {
-    let playersId=this.state.players.map((value:any)=>value.client.sessionId);
-    for(let player of this.state.players.values()){
-      player.client.send("players",playersId);
-      let val=playersId.shift();
+  private sendPlayers() {
+    let playersId = this.state.players.map((value: any) => value.client.sessionId);
+    for (let player of this.state.players.values()) {
+      player.client.send("players", playersId);
+      let val = playersId.shift();
       playersId.push(val);
     }
   }
@@ -148,7 +155,7 @@ export class CaboRoom extends Room {
     return this.state.players[this.currentTurnIndex].client.sessionId;
   }
 
-  private getRandomInt(max:number) {
+  private getRandomInt(max: number) {
     return Math.floor(Math.random() * Math.floor(max));
   }
 }

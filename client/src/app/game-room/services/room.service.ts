@@ -39,7 +39,6 @@ export class RoomService {
 
   public async joinOrCreate(options?:any): Promise<Room>//i.e for options {players:5,AI:3}=> 5 players -> 3 of them are AI
   {
-    console.log(options);
     try{
       if(typeof options==="undefined")
         await this.joinRoom();
@@ -98,7 +97,9 @@ export class RoomService {
 
   public async nextTurn(){
     this._serverMsg=undefined;
-    this.room.send("nextTurn", {});
+    // setTimeout(() => {
+      this.room.send("nextTurn", {});
+    // }, 30);
   }
 
   private async waitForServerMessage(timeout,resolve,reject){
@@ -114,7 +115,7 @@ export class RoomService {
     }, timeout);
   }
 
-  public async drawCard(){
+  public async drawCard():Promise<string>{
     this.room.send("draw-card",{});
     return new Promise((resolve,reject)=>{
       this.waitForServerMessage(5,resolve,reject);
@@ -134,6 +135,22 @@ export class RoomService {
   {
     this.room.send("get-card",{player:this._myId,index:cardIndex});
     return new Promise((resolve,reject)=> this.waitForServerMessage(5,resolve,reject));
+  }
+
+  public takeFromDeck(handIndex:number)
+  {
+    this.room.send("take-from-deck",{ card : this._serverMsg, index : handIndex });
+  }
+
+  public async takeFromDiscard(handIndex:number){
+    this.room.send("take-from-discard",{ index : handIndex});
+  }
+
+  public swapTwoCards(message:string)
+  {
+    let players:any=message.split(" ");
+    players=players.map((player)=>player.split(":"));
+    this.room.send("swap-two-cards",{players:[players[0][0],players[1][0]],cards:[parseInt(players[0][1]),parseInt(players[1][1])]});
   }
 
   public sendChatMessage(message){
