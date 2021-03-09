@@ -5,7 +5,6 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-root',
   template:`
               <router-outlet>
-                <alert></alert>
               </router-outlet>
             `,
   styleUrls: ['./app.component.scss']
