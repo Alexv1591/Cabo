@@ -101,6 +101,11 @@ export class RoomService {
     this.room.onMessage("you-win",(message)=>console.log("I WIN!"));
   }
 
+  public async playerReady()
+  {
+    this.room.send("ready",);
+  }
+
   public async cabo(){
     this.room.send("cabo",);
   }

@@ -39,11 +39,9 @@ export class PackComponent implements OnInit {
 
   private toggleStatus(){
     this.status = 'float';
-    console.log("toggling pack status to " + this.status);
     setTimeout( () => {
       this.status='none';
-      console.log("toggling pack status to " + this.status);
-    }, 3000);
+    }, 2000);
   }
 
   ngOnInit(): void { this.loadMassages(); }

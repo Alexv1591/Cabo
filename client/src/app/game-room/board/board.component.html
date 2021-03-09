@@ -8,10 +8,15 @@
                 <app-pack [isDrawable]="roundStart" (draw)="drawCard()"></app-pack>
             </div>
             <div class="col-">
-                STICK
+                {{state}}
+                <br>
+                <button *ngIf="state!='swap-cards'" type="button" class="btn btn-info" (click)="stickClicked()">STICK</button>
+                <!-- <ng-template *ngIf="state=='swap-cards'" #skipSwap><button type="button" class="btn btn-info">Skip<br>Swap</button></ng-template> -->
+                <button *ngIf="state=='swap-cards'" type="button" class="btn btn-info" (click)="skipSwapClicked()">Skip<br>Swap</button>
             </div>
             <div class="discard col-">
-                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard" (dive)="dumpsterDive()" (discard)="clickedDiscard()"></app-discard>
+                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard"
+                            (dive)="dumpsterDive()" (discard)="clickedDiscard()"></app-discard>
             </div>
         </div>
     </div>

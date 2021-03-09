@@ -35,11 +35,12 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     this.cardRefs = new Array<ComponentRef<CardComponent>>();
   }
 
-  containerClick(containerId: string): void {
+  containerClick($event,containerId: string): void {
     let ix = Number(containerId);
-    let topp = this.container.nativeElement.offsetTop;
-    let leftp = this.container.nativeElement.offsetTop;
-    console.log("containderClick top:" + topp + " left:" + leftp);
+    let topp = $event.clientY;
+    let leftp = $event.clientX;
+    // console.log("containderClick top:" + topp + " left:" + leftp);
+    // this.cardRefs[ix].instance.toggleHide();
     if (this.canKeep) {
       this.canKeep = false;
       this.keep.next({ containerID: ix, playerID: this.playerId, top: topp, left: leftp });
@@ -72,6 +73,19 @@ export class PlayerComponent implements OnInit, AfterViewInit {
       this.createCardholders();
       this.playerId = this.data.id;
     }, 0);
+    this.firstRevealHide();//TO DO add to room service message game start
+  }
+
+  private firstRevealHide(){
+    setTimeout(() => {
+      this.cardRefs[0].instance.toggleHide(true);
+      this.cardRefs[1].instance.toggleHide(true);
+    }, 500);
+    setTimeout(() => {
+      console.log("do i ever see this")
+      this.cardRefs[0].instance.toggleHide(false);
+      this.cardRefs[1].instance.toggleHide(false);
+    }, 5000);
   }
 
   private setPosition(top: string, left: string, rotation: string): void {
@@ -89,15 +103,17 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit(): void { this.loadMassages(); }
+  ngOnInit(): void {
+    this.loadMassages();
+  }
 
   private async loadMassages() {
+    this.room_service.room.onMessage("my-turn", (message) => {
+      // this.firstRevealHide(); //TO DO remove from init
+    });
     this.room_service.room.onMessage("card-clicked", (message) => {
-      console.log("checking if its me");
-      if (this.playerId == message.player) {
-        console.log("its me");
-        this.cardRefs[message.index].instance.toggleStatus();
-      }
+      if (this.playerId == message.player)
+        this.cardRefs[message.index].instance.toggleFloat();
     });
   }
 }

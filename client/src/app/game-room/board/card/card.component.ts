@@ -8,12 +8,21 @@ import { Component, Input, OnInit } from '@angular/core';
   animations: [
     trigger('floatStatus', [
       state('none', style({
-
+        overflow: 'hidden',
+        height: '*',
+        width: '*'
       })),
       state('float', style({
         transform: 'scale(1.1,1.1)',
         boxShadow: '0 10px 6px -6px #777'
       })),
+      state('hide', style({
+        opacity: '0',
+        overflow: 'hidden',
+        height: '0px',
+        width: '0px'
+      })),
+      transition('none => hide', animate('0ms')),
       transition('* => *', animate('500ms ease'))
     ])
   ]
@@ -24,7 +33,7 @@ export class CardComponent implements OnInit {
 
   glowStyle: string = 'none';
 
-  status: 'none' | 'float' = 'none';
+  status: 'none' | 'float' | 'hide' = 'none';
 
   public setGlow( color: string ){
     switch (color) {
@@ -45,8 +54,16 @@ export class CardComponent implements OnInit {
     }
   }
 
-  public toggleStatus(){
-    console.log("toggling card status");
+  public toggleHide( bool: boolean ){
+    console.log("toggle status before -- " + this.status );
+    this.status = bool==true ? 'hide' : 'none';
+    console.log("toggle status after -- " + this.status );
+    // setTimeout( () => {
+    //   this.status='none';
+    // }, 2000);
+  }
+
+  public toggleFloat(){
     this.status = 'float';
     setTimeout( () => {
       this.status='none';

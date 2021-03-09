@@ -40,7 +40,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private goAgain: boolean = false;
   private swapString: string = "";
 
-  private state: any;
+  state: any = 'none';
 
   constructor(private resolver: ComponentFactoryResolver, private host: ElementRef, private room_service: RoomService) {
     this.placement_angles = new Array<number>();
@@ -85,6 +85,42 @@ export class BoardComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.generate(this.player_count, Math.round(this.host.nativeElement.offsetHeight * 0.5));
     }, 0);
+    setTimeout(() => {
+      this.firstReveal();
+    }, 500);
+  }
+
+  private async firstReveal(){
+    
+    let tmpCardPath0 = await this.room_service.getCard(this.playerRefs[0].instance.id, 0);
+    let tmpCardRef0 = this.showCard( tmpCardPath0, 500, 450 );
+    let tmpCardPath1 = await this.room_service.getCard(this.playerRefs[0].instance.id, 1);
+    let tmpCardRef1 = this.showCard( tmpCardPath1, 500, 650 );
+
+    setTimeout(() => {
+      tmpCardRef0.instance.toggleStatus();
+    }, 500);
+    tmpCardRef1.instance.toggleStatus();
+
+    setTimeout(() => {
+      tmpCardRef0.instance.toggleStatus();
+      tmpCardRef1.instance.toggleStatus();
+    }, 4000);
+    setTimeout(() => {
+      tmpCardRef0.destroy();
+      tmpCardRef1.destroy();
+    }, 5000);
+  }
+
+  skipSwapClicked(){
+    this.swapString = "";
+    this.playerGlow( Glow.none );
+    this.opponentGlow( Glow.none );
+    this.room_service.nextTurn();
+  }
+
+  stickClicked(){
+    alert("Something should happen now...");
   }
 
   private async keepCard($event){
@@ -134,7 +170,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   private specialCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){
-    console.log( "my state is " + String(this.state) );
     switch (this.state) {
       case states.ActionCard.PEEK_SELF:
         this.peekCard( tmpCardRef );
@@ -146,7 +181,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
         break;
       case states.ActionCard.SWAP_CARDS:
         if( this.goAgain ){
-          console.log("GO AGAIN")
           this.goAgain = false;
           return;
         }
@@ -166,7 +200,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
         this.goAgain = true;
         return;
       default:
-        throw "cardClick() failed due to invalid state value -- " + this.state;
+        throw "specialCard() failed due to invalid state value -- " + this.state;
         break;
     }
     this.state = states.ActionCard.NONE;
@@ -178,22 +212,28 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.swapString = "";
   }
 
-  private peekCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){
-    tmpCardRef.instance.toggleStatus();
-    setTimeout(() => {  //TO DO animation
+  private peekCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){  // TO DO fix to be captain peekCard
+    setTimeout(() => {
+      tmpCardRef.instance.toggleStatus();
+    }, 10);
+    setTimeout(() => {
+      tmpCardRef.instance.toggleStatus();
+    }, 2000);
+    setTimeout(() => {
       tmpCardRef.destroy();
-    }, 1000);
+    }, 2500);
   }
 
   async drawCard() {
-    console.log("drawCard");
     this.state = states.FirstState.DRAW;
     this.roundStart = false;
     let heldCard = await this.room_service.drawCard();
     let topp = this.pack_discardRef.nativeElement.offsetTop;
     let leftp = this.pack_discardRef.nativeElement.offsetLeft;
     this.cardRef = this.showCard( heldCard, topp, leftp );
-    this.cardRef.instance.toggleStatus();
+    setTimeout(() => {
+      this.cardRef.instance.toggleStatus();
+    }, 10);
     this.keepOrDiscard();
   }
 
@@ -205,7 +245,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let topp = this.pack_discardRef.nativeElement.offsetTop;
     let leftp = this.pack_discardRef.nativeElement.offsetLeft;
     this.cardRef = this.showCard( heldCard, topp, leftp );
-    this.cardRef.instance.toggleStatus();
+    setTimeout(() => {
+      this.cardRef.instance.toggleStatus();
+    }, 10);
     this.playerGlow( Glow.keep );
   }
 
@@ -217,8 +259,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     let tmpCardRef = this.container.createComponent(componentFactory);
     tmpCardRef.instance.data = { path: path, top: top, left: left };
-    // this.cardRef = this.container.createComponent(componentFactory);
-    // this.cardRef.instance.data = { path: path, top: top, left: left };
     return tmpCardRef;
   }
 
@@ -293,14 +333,5 @@ export class BoardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private trimPath(path: any): string {
-    let _pre = /-/gi;
-    let _post = /.png/gi;
-    let tmp = String(path);
-    tmp = tmp.slice(-6);
-    tmp = tmp.replace(_pre, "");
-    tmp = tmp.replace(_post, "");
-    return tmp;
-  }
-
+  
 }
