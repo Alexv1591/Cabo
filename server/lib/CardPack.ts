@@ -36,4 +36,13 @@ export class CardPack extends Schema
     {
         return this.deck.shift();
     }
+    public get size():number{
+        return this.deck.length;
+    }
+
+    public static howManyHaveButterVal(val:number)
+    {
+        let deck=new CardPack();
+        return deck.deck.filter((element:any)=>{ return element.val<val; }).length;
+    }
 }
