@@ -41,6 +41,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private goAgain: boolean = false;
   private swapString: string = "";
   ready: boolean = false;
+  cabo: boolean = false;
 
   state: any = 'none';
 
@@ -154,6 +155,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private endGame(){
     this.roundStart = false;
     this.room_service.cabo();
+    this.room_service.nextTurn();
   }
 
   private async keepCard($event) {
@@ -177,7 +179,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private fromPackOrDiscard(index: number) {
     switch (this.state) {
       case states.FirstState.DRAW:
-        this.room_service.takeFromDeck(index);
+        this.room_service.takeFromDeck(index, this.cardRef.instance.path );
         break;
       case states.FirstState.DUMPSTER_DIVE:
         this.room_service.takeFromDiscard(index);
@@ -367,6 +369,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
     });
     this.room_service.room.onMessage("my-turn", (message) => {
       this.startTurn();
+    });
+    this.room_service.room.onMessage("cabo", (message) => {
+      this.cabo = true;
     });
   }
 

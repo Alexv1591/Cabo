@@ -146,9 +146,9 @@ export class RoomService {
     return new Promise((resolve,reject)=>this.waitForServerMessage(5,resolve,reject));
   }
 
-  public takeFromDeck(handIndex:number)
+  public takeFromDeck(handIndex:number, imgPath: string)
   {
-    this.room.send("take-from-deck",{ card : this._serverMsg, index : handIndex });
+    this.room.send("take-from-deck",{ card : imgPath, index : handIndex });
   }
 
   public async takeFromDiscard(handIndex:number){
