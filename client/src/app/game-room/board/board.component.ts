@@ -165,12 +165,17 @@ export class BoardComponent implements OnInit, AfterViewInit {
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     let tmpCardRef = this.container.createComponent(componentFactory);
     tmpCardRef.instance.data = { path: tmpCardPath, top: $event.top, left: $event.left };
+    setTimeout(() => { tmpCardRef.instance.toggleStatus(); }, 50);
     this.fromPackOrDiscard(ix);
-    setTimeout(() => {  //TO DO animation
+    setTimeout(() => {
+      tmpCardRef.instance.toggleStatus();
       this.discardComponent.setTop(tmpCardRef.instance.path);
+      this.cardRef.instance.toggleStatus();
+    }, 3000);
+    setTimeout(() => {
       tmpCardRef.destroy();
       this.cardRef.destroy();
-    }, 1000);
+    }, 3500);
     this.room_service.nextTurn();
   }
 
@@ -196,7 +201,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
       this.removeGlow(playerId);
       this.swapString += playerId + ':' + ix + ' ';
     }
-
     let tmpCardPath = await this.room_service.getCard(playerId, ix);
     let tmpCardRef = this.showCard(tmpCardPath, $event.top, $event.left);
     this.specialCard(tmpCardRef);
@@ -244,17 +248,17 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.room_service.swapTwoCards(this.swapString.trim());
     this.swapString = "";
   }
-
-  private peekCard(tmpCardRef: ComponentRef<RevealedCardComponent>) {  // TO DO fix to be captain peekCard
+// TO DO fix to be captain peekCard
+  private peekCard(tmpCardRef: ComponentRef<RevealedCardComponent>) {
     setTimeout(() => {
       tmpCardRef.instance.toggleStatus();
     }, 10);
     setTimeout(() => {
       tmpCardRef.instance.toggleStatus();
-    }, 2000);
+    }, 3000);
     setTimeout(() => {
       tmpCardRef.destroy();
-    }, 2500);
+    }, 3500);
   }
 
   async drawCard() {
@@ -264,10 +268,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let topp = this.center_elementRef.nativeElement.offsetTop;
     let leftp = this.center_elementRef.nativeElement.offsetLeft;
     this.cardRef = this.showCard(heldCard, topp, leftp);
-    setTimeout(() => {
-      this.cardRef.instance.toggleStatus();
-      console.log("showing revealed card " + leftp + " & " + topp)
-    }, 100);
+    setTimeout(() => { this.cardRef.instance.toggleStatus(); }, 50);
     this.keepOrDiscard();
   }
 
@@ -305,12 +306,15 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let tmpCardPath = this.cardRef.instance.data.path;
     this.canDiscard = false;
     this.playerGlow(Glow.none);
-    this.discardComponent.setTop(tmpCardPath);
     this.room_service.discardCard(tmpCardPath);
     this.state = states.getActionState(tmpCardPath);
     this.resolveCard();
     //TO DO animation
-    this.cardRef.destroy();
+    this.cardRef.instance.toggleStatus();
+    setTimeout(() => {
+      this.discardComponent.setTop(tmpCardPath);
+      this.cardRef.destroy();
+    }, 500);
   }
 
   private resolveCard() {
