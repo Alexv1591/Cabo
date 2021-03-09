@@ -40,7 +40,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private goAgain: boolean = false;
   private swapString: string = "";
 
-  private state: any;
+  state: any = 'none';
 
   constructor(private resolver: ComponentFactoryResolver, private host: ElementRef, private room_service: RoomService) {
     this.placement_angles = new Array<number>();
@@ -110,6 +110,17 @@ export class BoardComponent implements OnInit, AfterViewInit {
       tmpCardRef0.destroy();
       tmpCardRef1.destroy();
     }, 5000);
+  }
+
+  skipSwapClicked(){
+    this.swapString = "";
+    this.playerGlow( Glow.none );
+    this.opponentGlow( Glow.none );
+    this.room_service.nextTurn();
+  }
+
+  stickClicked(){
+    alert("Something should happen now...");
   }
 
   private async keepCard($event){
@@ -201,7 +212,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.swapString = "";
   }
 
-  private peekCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){
+  private peekCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){  // TO DO fix to be captain peekCard
     setTimeout(() => {
       tmpCardRef.instance.toggleStatus();
     }, 10);
