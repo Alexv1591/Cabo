@@ -12,7 +12,7 @@ enum Glow {
   remove = 'green',
   peek = 'yellow',
   swap = 'orange',
-  //stick = 'red',
+  stick = 'red',
   none = 'none'
 }
 
@@ -98,13 +98,13 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let mainWidth: number = this.host.nativeElement.offsetWidth;
     // width: 135px; 
     // height: 210px;
-    let topp = this.host.nativeElement.offsetHeight-230;
-    let leftp = Math.round(this.host.nativeElement.offsetWidth*0.35);
+    let topp = this.host.nativeElement.offsetHeight - 230;
+    let leftp = Math.round(this.host.nativeElement.offsetWidth * 0.35);
 
     let tmpCardPath0 = await this.room_service.getCard(this.playerRefs[0].instance.id, 0);
     let tmpCardPath1 = await this.room_service.getCard(this.playerRefs[0].instance.id, 1);
     this.cardRef = this.showCard(tmpCardPath0, topp, leftp);
-    this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp+300);
+    this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp + 300);
 
     setTimeout(() => {
       this.cardRef.instance.toggleStatus();
@@ -113,7 +113,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   }
 
-  private removeFirstReveal(){
+  private removeFirstReveal() {
     this.cardRef.instance.toggleStatus();
     this.cardRef2.instance.toggleStatus();
     setTimeout(() => {
@@ -125,9 +125,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
   readyClicked() {
     this.room_service.playerReady();
     this.ready = true;
-    setTimeout(() => {
-      this.ready_btnRef.nativeElement.remove();
-    }, 1500);
   }
 
   skipSwapClicked() {
@@ -139,6 +136,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   stickClicked() {
+    //this.playerGlow( Glow.stick );
     alert("Something should happen now...");
   }
 
@@ -152,7 +150,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private endGame(){
+  private endGame() {
     this.roundStart = false;
     this.room_service.cabo();
     this.room_service.nextTurn();
@@ -179,7 +177,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   private fromPackOrDiscard(index: number) {
     switch (this.state) {
       case states.FirstState.DRAW:
-        this.room_service.takeFromDeck(index, this.cardRef.instance.path );
+        this.room_service.takeFromDeck(index, this.cardRef.instance.path);
         break;
       case states.FirstState.DUMPSTER_DIVE:
         this.room_service.takeFromDiscard(index);

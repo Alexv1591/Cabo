@@ -46,6 +46,9 @@ export class CardComponent implements OnInit {
       case 'orange':
         this.glowStyle = "glow-orange 1s ease-in-out infinite alternate";
         break;
+      case 'red':
+        this.glowStyle = "glow-red 1s ease-in-out infinite alternate";
+        break;
       case 'none':
         this.glowStyle = "none";
         break;

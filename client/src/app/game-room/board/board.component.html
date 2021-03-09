@@ -8,9 +8,8 @@
                 <app-pack [isDrawable]="roundStart" (draw)="drawCard()"></app-pack>
             </div>
             <div class="col-">
-                {{state}}
                 <br>
-                <button [disabled]="state=='swap-cards' || !ready" type="button" class="btn btn-inline-warning"
+                <button [disabled]="state=='swap-cards' || !ready" type="button" class="btn btn-outline-warning"
                     (click)="stickClicked()">STICK</button>
             </div>
             <div class="discard col-">
@@ -26,7 +25,7 @@
         </div>
         <div class="row">
             <div class="col- d-flex justify-content-left">
-                <button #ready_btn type="button" class="btn btn-success" (click)="readyClicked()">I'm ready!</button>
+                <button #ready_btn *ngIf="!ready" type="button" class="btn btn-success" (click)="readyClicked()">I'm ready!</button>
             </div>
             <div class="col- d-flex justify-content-right">
                 <button *ngIf="state=='swap-cards'" type="button" class="btn btn-info"
