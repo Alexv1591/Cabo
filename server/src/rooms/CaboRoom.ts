@@ -6,6 +6,7 @@ import { CaboState } from "./State/CaboState";
 export class CaboRoom extends Room {
   private currentTurnIndex: number;
   private turns: number = 0;
+  private readyPlayers:number=0;
   constructor() {
     super();
   }
@@ -35,6 +36,12 @@ export class CaboRoom extends Room {
   }
 
   private async loadMassageListener() {
+    
+    this.onMessage("ready",async (client,message)=> {
+      this.readyPlayers++;
+      if(this.readyPlayers===this.maxClients)
+        this.initPlayerTurn();
+    })
 
     this.onMessage("nextTurn",(client, message) => {
       if(this.turns<56){
@@ -94,10 +101,38 @@ export class CaboRoom extends Room {
       this.broadcast("player-swap-two-cards", message, { except: client });//notify other players about the move
     });
 
+    this.onMessage("cabo",(client,message)=>{
+      if(this.getCurrentTurnId()!=client.sessionId){
+        client.send("not-your-turn",);
+        return;
+      }
+      let winner:string=this.calculateWinner();
+      this.notifyPlayersAboutResualt(winner);
+      
+    });
+
     this.onMessage("chat-message", (client, message) => {
       this.broadcast("chat-message", { player: client.sessionId, message: message });
     });
 
+  }
+
+  private calculateWinner(){
+    let scores=this.state.players.map((player:Player)=>player.getPoints());
+    let winnerIndex=scores.indexOf(Math.min(...scores));
+    return this.state.players[winnerIndex].client.sessionId;
+  }
+  
+  private notifyPlayersAboutResualt(winnerId:string){
+    let winner=this.getPlayerById(winnerId);
+    this.state.players.forEach((player:Player) => {
+      player.client.send("my-end-point",{me:player.toString(),points:player.getPoints()});
+      if(winnerId!=player.client.sessionId)
+        player.client.send("winner",{winner:winner.toString(),points:winner.getPoints()});
+      else
+        player.client.send("you-win",{});
+
+    });
   }
 
   private getPlayerById(id: string) {
@@ -114,10 +149,6 @@ export class CaboRoom extends Room {
     console.log(str);
   }
 
-  private gameStart() {
-    return this.clients.length == this.maxClients;
-  }
-
   private initGame() {
     console.log("Start of the Game state:")
     for (let i = 0; i < 4; i++) {
@@ -132,7 +163,6 @@ export class CaboRoom extends Room {
     this.sendPlayers()
     this.currentTurnIndex = this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
     this.broadcast('game-start',);//TODO: send to card from the hand for every player
-    this.initPlayerTurn();
   }
 
   private initPlayerTurn() {
@@ -151,7 +181,7 @@ export class CaboRoom extends Room {
     }
   }
 
-  private getCurrentTurnId(): any {
+  private getCurrentTurnId(): string {
     return this.state.players[this.currentTurnIndex].client.sessionId;
   }
 
