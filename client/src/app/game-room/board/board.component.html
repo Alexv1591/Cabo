@@ -2,21 +2,33 @@
     <ng-template #container>
 
     </ng-template>
-    <div #pack_discard class="pack_discard">
-        <div class="row">
+    <div #center_element class="center_element">
+        <div class="pack_discard row">
             <div #pack id="pack" class="col-">
                 <app-pack [isDrawable]="roundStart" (draw)="drawCard()"></app-pack>
             </div>
             <div class="col-">
                 {{state}}
                 <br>
-                <button *ngIf="state!='swap-cards'" type="button" class="btn btn-info" (click)="stickClicked()">STICK</button>
-                <!-- <ng-template *ngIf="state=='swap-cards'" #skipSwap><button type="button" class="btn btn-info">Skip<br>Swap</button></ng-template> -->
-                <button *ngIf="state=='swap-cards'" type="button" class="btn btn-info" (click)="skipSwapClicked()">Skip<br>Swap</button>
+                <button [disabled]="state=='swap-cards' || !ready" type="button" class="btn btn-inline-warning"
+                    (click)="stickClicked()">STICK</button>
             </div>
             <div class="discard col-">
-                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard"
-                            (dive)="dumpsterDive()" (discard)="clickedDiscard()"></app-discard>
+                <app-discard #discard [isDrawable]="roundStart" [isDiscardable]="canDiscard" (dive)="dumpsterDive()"
+                    (discard)="clickedDiscard()"></app-discard>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col- d-flex justify-content-left">
+                <button #ready_btn type="button" class="btn btn-success" (click)="readyClicked()">I'm ready!</button>
+            </div>
+            <div class="col- d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-primary cabo_btn" [disabled]="!roundStart"
+                    (click)="caboClicked()">CABO</button>
+            </div>
+            <div class="col- d-flex justify-content-right">
+                <button *ngIf="state=='swap-cards'" type="button" class="btn btn-info"
+                    (click)="skipSwapClicked()">Skip<br>Swap</button>
             </div>
         </div>
     </div>

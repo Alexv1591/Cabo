@@ -28,10 +28,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
   @ViewChild('container', { read: ViewContainerRef }) container: ViewContainerRef;
   @ViewChild('discard') discardComponent: DiscardComponent;
   playerRefs: ComponentRef<PlayerComponent>[];
-  private cardRef: ComponentRef<RevealedCardComponent>;
-
-  @ViewChild('pack_discard', { read: ElementRef }) pack_discardRef: ElementRef;
+  @ViewChild('ready_btn', { read: ElementRef }) ready_btnRef: ElementRef;
+  @ViewChild('center_element', { read: ElementRef }) center_elementRef: ElementRef;
   @ViewChild('pack', { read: ElementRef }) packRef: ElementRef; //not used
+  private cardRef: ComponentRef<RevealedCardComponent>;
+  private cardRef2: ComponentRef<RevealedCardComponent>;
 
   private player_count: number;
   private placement_angles: number[];
@@ -39,6 +40,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   canDiscard: boolean = false;
   private goAgain: boolean = false;
   private swapString: string = "";
+  ready: boolean = false;
 
   state: any = 'none';
 
@@ -90,42 +92,56 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }, 500);
   }
 
-  private async firstReveal(){
-    
+  private async firstReveal() {
+
     let tmpCardPath0 = await this.room_service.getCard(this.playerRefs[0].instance.id, 0);
-    let tmpCardRef0 = this.showCard( tmpCardPath0, 500, 450 );
     let tmpCardPath1 = await this.room_service.getCard(this.playerRefs[0].instance.id, 1);
-    let tmpCardRef1 = this.showCard( tmpCardPath1, 500, 650 );
+    this.cardRef = this.showCard(tmpCardPath0, 500, 450);
+    this.cardRef2 = this.showCard(tmpCardPath1, 500, 650);
 
     setTimeout(() => {
-      tmpCardRef0.instance.toggleStatus();
+      this.cardRef.instance.toggleStatus();
     }, 500);
-    tmpCardRef1.instance.toggleStatus();
+    this.cardRef2.instance.toggleStatus();
 
-    setTimeout(() => {
-      tmpCardRef0.instance.toggleStatus();
-      tmpCardRef1.instance.toggleStatus();
-    }, 4000);
-    setTimeout(() => {
-      tmpCardRef0.destroy();
-      tmpCardRef1.destroy();
-    }, 5000);
   }
 
-  skipSwapClicked(){
+  private removeFirstReveal(){
+    this.cardRef.instance.toggleStatus();
+    this.cardRef2.instance.toggleStatus();
+    setTimeout(() => {
+      this.cardRef.destroy();
+      this.cardRef2.destroy();
+    }, 700);
+  }
+
+  readyClicked() {
+    this.room_service.playerReady();
+    this.ready = true;
+    setTimeout(() => {
+      this.ready_btnRef.nativeElement.remove();
+    }, 1500);
+  }
+
+  skipSwapClicked() {
     this.swapString = "";
-    this.playerGlow( Glow.none );
-    this.opponentGlow( Glow.none );
+    this.state = 'none';
+    this.playerGlow(Glow.none);
+    this.opponentGlow(Glow.none);
     this.room_service.nextTurn();
   }
 
-  stickClicked(){
+  stickClicked() {
     alert("Something should happen now...");
   }
 
-  private async keepCard($event){
+  caboClicked() {
+    alert("Something should happen now...");
+  }
+
+  private async keepCard($event) {
     this.canDiscard = false;
-    this.playerGlow( Glow.none );
+    this.playerGlow(Glow.none);
     let ix = $event.containerID;
     let playerId = $event.playerID;
     let tmpCardPath = await this.room_service.getCard(playerId, ix);
@@ -141,7 +157,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.room_service.nextTurn();
   }
 
-  private fromPackOrDiscard(index:number){
+  private fromPackOrDiscard(index: number) {
     switch (this.state) {
       case states.FirstState.DRAW:
         this.room_service.takeFromDeck(index);
@@ -159,43 +175,43 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.canDiscard = false;
     let ix = $event.containerID;
     let playerId = $event.playerID;
-    if( this.state == states.ActionCard.SWAP_CARDS ){
-      this.removeGlow( playerId );
-      this.swapString += playerId+':'+ix+' ';
+    if (this.state == states.ActionCard.SWAP_CARDS) {
+      this.removeGlow(playerId);
+      this.swapString += playerId + ':' + ix + ' ';
     }
 
     let tmpCardPath = await this.room_service.getCard(playerId, ix);
-    let tmpCardRef = this.showCard( tmpCardPath, $event.top, $event.left );
-    this.specialCard( tmpCardRef );
+    let tmpCardRef = this.showCard(tmpCardPath, $event.top, $event.left);
+    this.specialCard(tmpCardRef);
   }
 
-  private specialCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){
+  private specialCard(tmpCardRef: ComponentRef<RevealedCardComponent>) {
     switch (this.state) {
       case states.ActionCard.PEEK_SELF:
-        this.peekCard( tmpCardRef );
-        this.playerGlow( Glow.none );
+        this.peekCard(tmpCardRef);
+        this.playerGlow(Glow.none);
         break;
       case states.ActionCard.PEEK_OPPONENT:
-        this.peekCard( tmpCardRef );
-        this.opponentGlow( Glow.none );
+        this.peekCard(tmpCardRef);
+        this.opponentGlow(Glow.none);
         break;
       case states.ActionCard.SWAP_CARDS:
-        if( this.goAgain ){
+        if (this.goAgain) {
           this.goAgain = false;
           return;
         }
         this.swapCards();
-        this.playerGlow( Glow.none );
-        this.opponentGlow( Glow.none );
+        this.playerGlow(Glow.none);
+        this.opponentGlow(Glow.none);
         break;
       case states.ActionCard.ULTIMATE_POWER:
-        this.peekCard( tmpCardRef );
-        if( this.goAgain ){
+        this.peekCard(tmpCardRef);
+        if (this.goAgain) {
           this.goAgain = false;
           return;
         }
-        this.playerGlow( Glow.swap );
-        this.opponentGlow( Glow.swap );
+        this.playerGlow(Glow.swap);
+        this.opponentGlow(Glow.swap);
         this.state = states.ActionCard.SWAP_CARDS;
         this.goAgain = true;
         return;
@@ -207,12 +223,12 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.room_service.nextTurn();
   }
 
-  private swapCards(){
-    this.room_service.swapTwoCards( this.swapString.trim() );
+  private swapCards() {
+    this.room_service.swapTwoCards(this.swapString.trim());
     this.swapString = "";
   }
 
-  private peekCard( tmpCardRef: ComponentRef<RevealedCardComponent> ){  // TO DO fix to be captain peekCard
+  private peekCard(tmpCardRef: ComponentRef<RevealedCardComponent>) {  // TO DO fix to be captain peekCard
     setTimeout(() => {
       tmpCardRef.instance.toggleStatus();
     }, 10);
@@ -228,34 +244,35 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.state = states.FirstState.DRAW;
     this.roundStart = false;
     let heldCard = await this.room_service.drawCard();
-    let topp = this.pack_discardRef.nativeElement.offsetTop;
-    let leftp = this.pack_discardRef.nativeElement.offsetLeft;
-    this.cardRef = this.showCard( heldCard, topp, leftp );
+    let topp = this.center_elementRef.nativeElement.offsetTop;
+    let leftp = this.center_elementRef.nativeElement.offsetLeft;
+    this.cardRef = this.showCard(heldCard, topp, leftp);
     setTimeout(() => {
       this.cardRef.instance.toggleStatus();
-    }, 10);
+      console.log("showing revealed card " + leftp + " & " + topp)
+    }, 100);
     this.keepOrDiscard();
   }
 
-  dumpsterDive(){
+  dumpsterDive() {
     console.log("dumpster-dive");
     this.state = states.FirstState.DUMPSTER_DIVE;
     this.roundStart = false;
     let heldCard = this.discardComponent.getTop();
-    let topp = this.pack_discardRef.nativeElement.offsetTop;
-    let leftp = this.pack_discardRef.nativeElement.offsetLeft;
-    this.cardRef = this.showCard( heldCard, topp, leftp );
+    let topp = this.center_elementRef.nativeElement.offsetTop;
+    let leftp = this.center_elementRef.nativeElement.offsetLeft;
+    this.cardRef = this.showCard(heldCard, topp, leftp);
     setTimeout(() => {
       this.cardRef.instance.toggleStatus();
     }, 10);
-    this.playerGlow( Glow.keep );
+    this.playerGlow(Glow.keep);
   }
 
   private startTurn() {
     this.packGlow(Glow.draw);
   }
 
-  private showCard( path:any, top:number, left:number ): ComponentRef<RevealedCardComponent>{
+  private showCard(path: any, top: number, left: number): ComponentRef<RevealedCardComponent> {
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     let tmpCardRef = this.container.createComponent(componentFactory);
     tmpCardRef.instance.data = { path: path, top: top, left: left };
@@ -271,9 +288,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let tmpCardPath = this.cardRef.instance.data.path;
     this.canDiscard = false;
     this.playerGlow(Glow.none);
-    this.discardComponent.setTop( tmpCardPath );
-    this.room_service.discardCard( tmpCardPath );
-    this.state = states.getActionState( tmpCardPath );
+    this.discardComponent.setTop(tmpCardPath);
+    this.room_service.discardCard(tmpCardPath);
+    this.state = states.getActionState(tmpCardPath);
     this.resolveCard();
     //TO DO animation
     this.cardRef.destroy();
@@ -320,18 +337,21 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.canDiscard = true;
   }
 
-  private removeGlow( player: string ){
+  private removeGlow(player: string) {
     for (let i = 0; i < this.playerRefs.length; i++) {
-      if( this.playerRefs[i].instance.id == player )
-        this.playerRefs[i].instance.setGlow( Glow.none );
+      if (this.playerRefs[i].instance.id == player)
+        this.playerRefs[i].instance.setGlow(Glow.none);
     }
   }
 
   private async loadMassages() {
+    this.room_service.room.onMessage("everybody-ready", (message) => {
+      this.removeFirstReveal();
+    });
     this.room_service.room.onMessage("my-turn", (message) => {
       this.startTurn();
     });
   }
 
-  
+
 }

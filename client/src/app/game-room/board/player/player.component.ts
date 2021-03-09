@@ -39,8 +39,6 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     let ix = Number(containerId);
     let topp = $event.clientY;
     let leftp = $event.clientX;
-    // console.log("containderClick top:" + topp + " left:" + leftp);
-    // this.cardRefs[ix].instance.toggleHide();
     if (this.canKeep) {
       this.canKeep = false;
       this.keep.next({ containerID: ix, playerID: this.playerId, top: topp, left: leftp });
@@ -73,19 +71,21 @@ export class PlayerComponent implements OnInit, AfterViewInit {
       this.createCardholders();
       this.playerId = this.data.id;
     }, 0);
-    this.firstRevealHide();//TO DO add to room service message game start
+    this.firstRevealHide();
   }
 
   private firstRevealHide(){
     setTimeout(() => {
       this.cardRefs[0].instance.toggleHide(true);
       this.cardRefs[1].instance.toggleHide(true);
-    }, 500);
+    }, 50);
+  }
+
+  private firstRevealShow(){
     setTimeout(() => {
-      console.log("do i ever see this")
       this.cardRefs[0].instance.toggleHide(false);
       this.cardRefs[1].instance.toggleHide(false);
-    }, 5000);
+    }, 50);
   }
 
   private setPosition(top: string, left: string, rotation: string): void {
@@ -108,8 +108,8 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   }
 
   private async loadMassages() {
-    this.room_service.room.onMessage("my-turn", (message) => {
-      // this.firstRevealHide(); //TO DO remove from init
+    this.room_service.room.onMessage("everybody-ready", (message) => {
+      this.firstRevealShow();
     });
     this.room_service.room.onMessage("card-clicked", (message) => {
       if (this.playerId == message.player)
