@@ -6,7 +6,7 @@ import { CaboState } from "./State/CaboState";
 export class CaboRoom extends Room {
   private currentTurnIndex: number;
   private turns: number = 0;
-  private readyPlayers=0;
+  private readyPlayers:number=0;
   constructor() {
     super();
   }
@@ -26,6 +26,7 @@ export class CaboRoom extends Room {
       return;
     this.lock();
     this.initGame();
+
   }
 
   onLeave(client: Client, consented: boolean) {
@@ -35,11 +36,11 @@ export class CaboRoom extends Room {
   }
 
   private async loadMassageListener() {
-
+    
     this.onMessage("ready",async (client,message)=> {
       this.readyPlayers++;
       if(this.readyPlayers===this.maxClients)
-        this.broadcast("all-ready",);
+        this.initPlayerTurn();
     })
 
     this.onMessage("nextTurn",(client, message) => {
@@ -159,10 +160,9 @@ export class CaboRoom extends Room {
     for (let player of this.state.players) {
       console.log(player + "")
     }
-    this.sendPlayers();
+    this.sendPlayers()
     this.currentTurnIndex = this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
     this.broadcast('game-start',);//TODO: send to card from the hand for every player
-    this.initPlayerTurn();
   }
 
   private initPlayerTurn() {
