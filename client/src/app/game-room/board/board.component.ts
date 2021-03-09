@@ -136,7 +136,18 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   caboClicked() {
-    alert("Something should happen now...");
+    console.log("CABO");
+    if (confirm('Are you sure you want to finish the game and call CABO?')) {
+      console.log('End game.');
+      this.endGame();
+    } else {
+      console.log('Carry on.');
+    }
+  }
+
+  private endGame(){
+    this.roundStart = false;
+    this.room_service.cabo();
   }
 
   private async keepCard($event) {
