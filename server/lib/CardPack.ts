@@ -36,4 +36,7 @@ export class CardPack extends Schema
     {
         return this.deck.shift();
     }
+    public get empty():boolean{
+        return this.deck.length==0;
+    }
 }

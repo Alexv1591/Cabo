@@ -5,8 +5,9 @@ import { CaboState } from "./State/CaboState";
 
 export class CaboRoom extends Room {
   private currentTurnIndex: number;
-  private turns: number = 0;
+  private cabo_caller:string;
   private readyPlayers:number=0;
+  private last_round:boolean=false;
   constructor() {
     super();
   }
@@ -44,15 +45,14 @@ export class CaboRoom extends Room {
     })
 
     this.onMessage("nextTurn",(client, message) => {
-      if(this.turns<56){
-        this.currentTurnIndex=((this.currentTurnIndex+1)%this.state.num_of_players);
-        this.initPlayerTurn();
-      }
-      else {
-        console.log("GameOver");
+      this.currentTurnIndex=((this.currentTurnIndex+1)%this.state.num_of_players);
+      if(this.gameOver()){
         this.broadcast("GameOver", {});
-        //this.logDiscardPile();
+        let winner:string=this.calculateWinner();
+        this.notifyPlayersAboutResualt(winner);
       }
+      else
+        this.initPlayerTurn();
     });
 
     this.onMessage("to_discard", (client, message) => {
@@ -67,6 +67,8 @@ export class CaboRoom extends Room {
       console.log(client.sessionId + " draw " + card);
       client.send("drawn-card", card.image);
       this.broadcast("player-draw-card", { id: client.sessionId }, { except: client });//notify other players about the move
+      if(this.state.pack.empty)
+        this.broadcast("empty-pack",);
     });
 
     this.onMessage("get-card", (client, message) => {
@@ -102,19 +104,21 @@ export class CaboRoom extends Room {
     });
 
     this.onMessage("cabo",(client,message)=>{
-      if(this.getCurrentTurnId()!=client.sessionId){
-        client.send("not-your-turn",);
-        return;
-      }
-      let winner:string=this.calculateWinner();
-      this.notifyPlayersAboutResualt(winner);
-      
+      this.cabo(client.sessionId);
     });
 
     this.onMessage("chat-message", (client, message) => {
       this.broadcast("chat-message", { player: client.sessionId, message: message });
     });
 
+  }
+  private gameOver():boolean{
+    return this.last_round && this.getCurrentTurnId()===this.cabo_caller;
+  }
+  public cabo(cabo_caller_id:string){
+    this.last_round=true;
+    this.cabo_caller=cabo_caller_id;
+    this.broadcast("cabo",{player:cabo_caller_id});
   }
 
   private calculateWinner(){
@@ -166,9 +170,7 @@ export class CaboRoom extends Room {
   }
 
   private initPlayerTurn() {
-    this.turns++;
     this.state.currentTurn = this.getCurrentTurnId();
-    console.log("turns: " + this.turns + " player: " + this.state.currentTurn);
     this.state.players[this.currentTurnIndex].client.send("my-turn", {});//,{ afterNextPatch : true });  
   }
 
