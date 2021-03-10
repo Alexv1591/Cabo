@@ -1,14 +1,16 @@
 import { Card } from "./Card";
 var  Heap = require( "collections/heap");
 export class Hand {
-    private cards:Map<number,Card>;
+    protected cards:Map<number,Card>;
     private freeKeys:any;//Heap
     constructor() 
     {
         this.freeKeys=new Heap([...Array(8).keys()],null,(a:number,b:number)=> {return b-a;})
         this.cards=new Map<number,Card>()
     }
-
+    public get indexes(){
+        return Array.from(this.cards.keys());
+    }
     public addCard(card:Card):void
     {
         this.cards.set(this.freeKeys.pop(),card);

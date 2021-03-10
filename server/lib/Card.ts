@@ -61,6 +61,9 @@ export class Card extends Schema{ // both NormalCard and Joker extends this clas
 
         }
     }
+    public isActionCard():boolean{
+        return this.rank>RANK.SIX && this.rank<RANK.KING;
+    }
 }
 
 export class NormalCard extends Card{
