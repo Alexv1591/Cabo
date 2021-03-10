@@ -88,9 +88,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.generate(this.player_count, Math.round(this.host.nativeElement.offsetHeight * 0.5));
     }, 0);
-    setTimeout(() => {
-      this.firstReveal();
-    }, 500);
+    this.firstReveal();
   }
 
   private async firstReveal() {
@@ -101,8 +99,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let topp = this.host.nativeElement.offsetHeight - 230;
     let leftp = Math.round(this.host.nativeElement.offsetWidth * 0.35);
 
-    let tmpCardPath0 = await this.room_service.getCard(this.playerRefs[0].instance.id, 0);
-    let tmpCardPath1 = await this.room_service.getCard(this.playerRefs[0].instance.id, 1);
+    let tmpCardPath0 = await this.room_service.getCard(0);
+    let tmpCardPath1 = await this.room_service.getCard(1);
     this.cardRef = this.showCard(tmpCardPath0, topp, leftp);
     this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp + 300);
 
@@ -161,7 +159,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.playerGlow(Glow.none);
     let ix = $event.containerID;
     let playerId = $event.playerID;
-    let tmpCardPath = await this.room_service.getCard(playerId, ix);
+    let tmpCardPath = await this.room_service.getCard(ix,playerId);
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     let tmpCardRef = this.container.createComponent(componentFactory);
     tmpCardRef.instance.data = { path: tmpCardPath, top: $event.top, left: $event.left };
@@ -201,7 +199,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
       this.removeGlow(playerId);
       this.swapString += playerId + ':' + ix + ' ';
     }
-    let tmpCardPath = await this.room_service.getCard(playerId, ix);
+    let tmpCardPath = await this.room_service.getCard(ix,playerId);
     let tmpCardRef = this.showCard(tmpCardPath, $event.top, $event.left);
     this.specialCard(tmpCardRef);
   }

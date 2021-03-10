@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Client, Room } from 'colyseus.js';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { AlertService } from 'src/app/_alert';
 
 const TO_MUCH_TIME:number=3125;
@@ -141,7 +141,9 @@ export class RoomService {
     this.room.send("to_discard",{card:cardPath});
   }
 
-  public async getCard(playerId:string,cardIndex:number){
+  public async getCard(cardIndex:number,playerId?:string){
+    if(typeof playerId==="undefined")
+      playerId=this.myId;
     this.room.send("get-card",{player:playerId,index:cardIndex});
     return new Promise((resolve,reject)=>this.waitForServerMessage(5,resolve,reject));
   }
