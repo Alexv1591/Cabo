@@ -16,10 +16,9 @@ export class CaboRoom extends Room {
   onCreate(options: any) {
     this.setState(new CaboState(options.AI));
     this.maxClients = options.players;
-    this.state.players.push(new BotPlayer(this));
-    //TODO: adds the AI players
+    for(let i=0;i<options.AI;i++)
+      this.state.players.push(new BotPlayer(this));
     this.loadMassageListener();
-
   }
 
   onJoin(client: Client, options: any) {
@@ -50,7 +49,7 @@ export class CaboRoom extends Room {
     })
 
     this.onMessage("nextTurn",(client, message) => {
-
+      this.nextTurn();
     });
 
     this.onMessage("to_discard", (client, message) => {
@@ -76,12 +75,7 @@ export class CaboRoom extends Room {
     });
 
     this.onMessage("swap-two-cards", (client, message) => { //message template => {players:[**player1 id**,**player2 id**],cards:[**card index for player1**,**card index for player2**]}
-      let players = message.players.map((value: any) => this.getPlayerById(value));
-      let indexes = message.cards;
-      //swap cards
-      let card = players[0].swapCard(players[1].getCard(indexes[1]), indexes[0]);
-      players[1].swapCard(card, indexes[1]);
-      this.broadcast("player-swap-two-cards", message, { except: client });//notify other players about the move
+      this.swapTwoCards(this.getPlayerById(client.sessionId),message);
     });
 
     this.onMessage("cabo",(client,message)=>{
@@ -124,7 +118,8 @@ export class CaboRoom extends Room {
   private getPlayerById(id: string) {
     let player = this.state.players.find((player: any) => { return id === player.id; });
     if (typeof player === "undefined")
-      throw id + " is not a player in this game";
+      throw new Error(id + " is not a player in this game");
+
     return player;
   }
 
@@ -147,16 +142,17 @@ export class CaboRoom extends Room {
       console.log(player + "")
     }
     this.sendPlayers();
-    this.currentTurnIndex = this.getRandomInt(this.state.num_of_players);//Randomly chose the first player
+    this.currentTurnIndex = CaboRoom.getRandomInt(this.state.num_of_players);//Randomly chose the first player
     this.broadcast('game-start',);//TODO: send to card from the hand for every player
   }
 
   private initPlayerTurn() {
     this.state.currentTurn = this.getCurrentTurnId();
     if(this.state.players[this.currentTurnIndex] instanceof UserPlayer)
-     this.state.players[this.currentTurnIndex].client.send("my-turn", {});//,{ afterNextPatch : true }); 
-    else
+     this.state.players[this.currentTurnIndex].client.send("my-turn",{ afterNextPatch : true }); 
+    else{
       this.state.players[this.currentTurnIndex].BotTurn(); 
+    }
   }
 
   private sendPlayers() {
@@ -175,7 +171,7 @@ export class CaboRoom extends Room {
     return this.state.players[this.currentTurnIndex].id;
   }
 
-  private getRandomInt(max: number) {
+  public static getRandomInt(max: number) {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
@@ -196,7 +192,7 @@ export class CaboRoom extends Room {
   public async toDiscard(player:Player,card:Card){
     this.state.discard_pile.push(card);
     console.log(card + " added to discard pile");//debug
-    this.broadcast("discard-card", card, ( player instanceof UserPlayer ) ? { except: player.client } : { });
+    this.broadcast("discard-card", card.image, ( player instanceof UserPlayer ) ? { except: player.client, afterNextPatch : true } : { });
   }
 
   public async drawCard(player:Player){
@@ -226,14 +222,36 @@ export class CaboRoom extends Room {
     this.state.discard_pile.push(discard);
     console.log(player.id + " swap the card in index " + replaceIndex);//debug
     console.log(discard.toString() + " added to discard pile");//debug
-    this.broadcast("player-take-from-deck", { player: player.id, index: replaceIndex, card:discard.image },(player instanceof UserPlayer) ? { except: player.client } : { });//notify other players about the move
+    this.broadcast("player-take-from-deck", { player: player.id, index: replaceIndex, card:discard.image },(player instanceof UserPlayer) ? { except: player.client ,afterNextPatch:true} : { });//notify other players about the move
+    this.getBots().filter((bot:BotPlayer)=> bot.id!=player.id).forEach((bot:BotPlayer) => { bot.notifyPlayerDiscardCard(player.id,replaceIndex); });
   }
 
   public async takeFromDiscard(player:Player,replaceIndex:number){
-    let discard = player.swapCard(this.state.discard_pile.pop(), replaceIndex);
+    let new_card=this.state.discard_pile.pop();
+    let discard = player.swapCard(new_card, replaceIndex);
     console.log(player.id + " take from discard " + player.getCard(replaceIndex));
     this.broadcast("player-take-from-deck", discard.image,(player instanceof UserPlayer) ? { except: player.client } : { });//notify other players about the move
+    this.getBots().filter((bot:BotPlayer)=> bot.id!=player.id).forEach((bot:BotPlayer) => { bot.notifyPlayerTakeFromDiscard(player.id,new_card,replaceIndex); });
   }
 
+  public async swapTwoCards(requester:Player,message:any){
+    console.log("Room:swaps")
+    let players = message.players.map((value: any) => this.getPlayerById(value));
+    console.log("Room: befor->"+players[0]+" "+players[1]);
+    let indexes = message.cards;
+    //notify the bot so it could change it's known_cards
+    this.getBots().forEach((bot:BotPlayer) => {
+        bot.notfiyCardsSwap(message.players,indexes);
+    });
+    //swap cards
+    let card = players[0].swapCard(players[1].getCard(indexes[1]), indexes[0]);
+    players[1].swapCard(card, indexes[1]);
+    console.log("Room: after->"+players[0]+" "+players[1]);
+    this.broadcast("swap-two-cards", message,(requester instanceof UserPlayer) ? { except: requester.client } : { });//notify other players about the move
+
+  }
+  private getBots(){
+    return this.state.players.filter((player:Player)=>{return (player instanceof BotPlayer);});
+  }
 
 }

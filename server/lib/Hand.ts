@@ -15,11 +15,18 @@ export class Hand {
     {
         this.cards.set(this.freeKeys.pop(),card);
     }
-
-    public removeCard(key:number) : void
+    public get size(){
+        return this.cards.size;
+    }
+    public removeCard(key:number) : Card
     {
-        this.cards.delete(key);
-        this.freeKeys.push(key);
+        let card:Card=null;
+        if(this.cards.has(key)){
+            card=this.getCard(key);
+            this.cards.delete(key);
+            this.freeKeys.push(key);
+        }
+        return card;   
     }
 
     public getCard(key:number) : Card
@@ -33,11 +40,6 @@ export class Hand {
         let sum=0;
         this.cards.forEach((value)=>{sum+=value.val;})
         return sum;
-    }
-
-    public getNumOfCards():number
-    {
-        return this.cards.size;
     }
 
     public toString() :string {

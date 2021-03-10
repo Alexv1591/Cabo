@@ -114,7 +114,7 @@ export class RoomService {
     this._serverMsg=undefined;
     setTimeout(() => {
       this.room.send("nextTurn", {});
-    }, 300);
+    }, 600);
   }
 
   private async waitForServerMessage(timeout,resolve,reject){

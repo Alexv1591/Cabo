@@ -1,5 +1,4 @@
 import { Schema } from "@colyseus/schema";
-import { Client } from "colyseus";
 
 import { Hand } from "./Hand"
 import { Card } from "./Card"

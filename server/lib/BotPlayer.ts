@@ -9,8 +9,10 @@ class OpponentHand extends Hand {
 
     constructor() { super(); }
 
-    public addOpponrntCard(index: number, card: Card) {
-        this.cards.set(index, card);
+    public addOpponentCard(index: number, card: Card) {
+        if(card!=null){
+            this.cards.set(index, card);
+        }
     }
 
     public getMinimumIndex() {
@@ -24,18 +26,36 @@ class OpponentHand extends Hand {
         return Math.min.apply(null, Array.from(this.cards.values()).map((card) => card.val));
     }
 
-    public countBetterVal(val:number)//count the number of butter cards in the hand compere to the given value
+    public countBetterVal(val:number)//count the number of better cards in the hand compere to the given value
     {
         let cards=Array.from(this.cards.values());
         return cards.filter((card:any)=>{return val>card.val}).length;
     }
+
+    public toString(){
+        let str:string='[ ';
+        for(let entry of this.cards.entries())
+            str+="<"+entry[0]+","+entry[1]+"> ";
+        return str+"]";
+    }
+
+    public countKnown():number{
+        return this.cards.size;
+    }
+
+    public knowAllCards():boolean
+    {
+        //TODO: update the number of cards for each player
+        return this.indexes.length===4;
+    }
+
 }
 
 export class BotPlayer extends Player {
     private static _bot_index = 0;
     private _players: Map<string, OpponentHand>;
     private my_known_cards: Array<number>;
-    private recentCard:Card;
+    private drwanCard:Card;
     constructor(private room: CaboRoom) {
         super();
         super._id = "AI" + (++BotPlayer._bot_index);
@@ -49,9 +69,10 @@ export class BotPlayer extends Player {
     }
 
     public lookAtMyCard(index: number) {
-        if ((super._hand.getNumOfCards() - 1) < index)
+        if ((this._hand.size - 1) < index)
             throw new Error("this bot don't have a card in index " + index);
-        this.my_known_cards.push(index);
+        if(!this.my_known_cards.includes(index))
+            this.my_known_cards.push(index);
         this.room.broadcast("card-clicked",{player:this.id,index:index});
     }
     private getMaximumEntry() {
@@ -59,77 +80,160 @@ export class BotPlayer extends Player {
         let maxIndex = -1;
         for (let known of this.my_known_cards) {
             let card = this.getCard(known);
-            max = (max < card.val) ? card.val : max;
             maxIndex = (max < card.val) ? known : maxIndex;
+            max = (max < card.val) ? card.val : max;
         }
         return [maxIndex,max];
     }
 
     public async BotTurn() {
         console.log("Bot Turn");
-        let firstState=await this.drawOrDive();
-        console.log("AI:"+firstState);
-        //this.recentCard=await this.drawOrDive();
-        //let choice=this.keepOrDiscard();
-        // switch(this.d){
-        //     case SecondState.KEEP:
-        //       this.keepCard();
-        //       break;
-        //     case SecondState.DISCARD:
-        //         this.discardCard();
-            
-        // }
-        this.room.nextTurn();
-    }
-
-    private async discardCard(){
-        if(this.recentCard.isActionCard())
-            this.actionCard();
+        //dumpster diveS
+        if((await this.drawOrDive())===FirstState.DUMPSTER_DIVE)
+            if(this.keepOrDiscard(await this.getTopOfDiscard()) === SecondState.KEEP){
+                this.drwanCard=await this.getTopOfDiscard();
+                this.keepCard(FirstState.DUMPSTER_DIVE);
+                setTimeout(()=>this.room.nextTurn(),1000);
+                return;
+            }
+        //draw from deck
         
+        this.drwanCard=await this.room.drawCard(this);
+        setTimeout(async () => {
+            switch(this.keepOrDiscard(this.drwanCard))
+            {
+                case SecondState.KEEP:
+                    this.keepCard(FirstState.DRAW);
+                    break;
+                case SecondState.DISCARD:
+                    await this.discardCard();
+                    console.log("Bot:End known-mine: "+this.my_known_cards);
+                    this._players.forEach((hand,key) => { console.log("Bot:"+key+" "+hand); });
+                    break;
+            }
+            setTimeout(() => {this.room.nextTurn();}, 1000);
+        }, 2000);
+
+      
+
+    }
+    
+    private async discardCard(){
+        if(this.drwanCard.isActionCard())
+            this.actionCard();
+        this.room.toDiscard(this,this.drwanCard);
     }
 
     private async actionCard(){
-        switch(this.recentCard.rank){
+        console.log("action cards "+ this.drwanCard.rank);
+        switch(this.drwanCard.rank){
             case RANK.SEVEN:
             case RANK.EIGHT:
-                this.lookAtMyCard
-                
+                await this.lookAtMyCard(this.randomUnknownIndex());
+                break;
+            case RANK.NINE:
+            case RANK.TEN:
+                await this.lookAtRandomOponentCard();
+                break;
+            case RANK.JACK:
+                await this.swapsCards();
+                break;
+            case RANK.QUEEN:
+                if(!this.allCardsAreKnown())
+                    await this.lookAtMyCard(this.randomUnknownIndex());
+                else
+                    await this.lookAtRandomOponentCard();
+                await this.lookAtRandomOponentCard();
+                await this.swapsCards();
+                break;
         }
     }
-     
+
+    private async lookAtRandomOponentCard(){
+        let message=this.getRandomOponentUnknownIndex();
+        console.log(message);
+        if(typeof message === "undefined")
+            return;
+        let card=await this.room.getCard(this,message)
+        this._players.get(message.player).addOpponentCard(message.index,card );
+    }
+
+    private swapsCards(){
+        let playersEntry=Array.from(this._players.entries()).filter((entry)=>{ return (entry[1].getMinimumValue())<(this.getMaximumEntry()[1]);})
+        if(playersEntry.length===0)
+            return;//TODO: Random swap!
+        let minVals=<number[]>playersEntry.map((entry)=>{return entry[1].getMinimumValue();});
+        let player=playersEntry[minVals.indexOf(Math.min(...minVals))];
+        this.room.swapTwoCards(this,{players:[this.id,player[0]],cards:[this.getMaximumEntry()[0],player[1].getMinimumIndex()]});
+    }
+    
+    private getRandomOponentUnknownIndex()
+    {
+        let unknownOpponents=Array.from(this._players.entries()).filter((entry)=>!entry[1].knowAllCards());
+        if(unknownOpponents.length===0)
+            return;
+        let randomPlayerEntry=unknownOpponents[CaboRoom.getRandomInt(unknownOpponents.length)];
+        let unknownCards=[...Array(4).keys()].filter((index)=>{ return  !(randomPlayerEntry[1].indexes.includes(index));});//TODO: update the number of cards for each player
+        let randomIndex=unknownCards[CaboRoom.getRandomInt(unknownCards.length)];
+        return {player:randomPlayerEntry[0],index:randomIndex};
+
+    }
 
     private randomUnknownIndex(){
-        
+        if(this.allCardsAreKnown())
+            return 0;
+        let unknownCards=this._hand.indexes.filter((index)=>{return !this.my_known_cards.includes(index)});
+        return unknownCards[CaboRoom.getRandomInt(unknownCards.length)];
+
     }
 
-    private async keepCard(){
-        let index=this.getMaximumEntry()[0]
-        let discard=this.swapCard(this.recentCard,index);
-        this.room.state.discard_pile.push(discard.image);
-        this.room.broadcast("player-take-from-deck", { player: this.id, index: index, card:discard.image });
+    private async keepCard(drawOrDive:FirstState){
+        let max_entry=this.getMaximumEntry();
+        let indexForNew;
+        if(this.drwanCard.val<max_entry[1])
+            indexForNew=max_entry[0];
+        else
+            indexForNew=this.randomUnknownIndex();
+        if(drawOrDive===FirstState.DRAW){
+            await this.room.takeFromDeck(this,this.drwanCard,indexForNew);
+        }
+        else
+            await this.room.takeFromDiscard(this,indexForNew);
+        if(!this.my_known_cards.includes(indexForNew))
+            this.my_known_cards.push(indexForNew);
     }
+
     private async drawOrDive(){
         if(this.room.state.discard_pile.length>0 && await this.shouldDumpsterDive()){
-            console.log("dumpster dive");
+            console.log("Bot:dumpster dive");
             return FirstState.DUMPSTER_DIVE;
         }
         else{
-            console.log("draw");
+            console.log("Bot:draw");
             return FirstState.DRAW;
-            // this.room.broadcast("player-draw-card",this.id);
-            // return this.room.state.pack.draw();
         }
     }
 
-    private keepOrDiscard():SecondState{
-        //TODO: somthing smarter then that
-        if(!this.recentCard.isActionCard() && this.recentCard.val<this.getMaximumEntry()[1])
+    private keepOrDiscard(card:Card):SecondState{
+        if(!card.isActionCard() && card.val<this.getMaximumEntry()[1])
             return SecondState.KEEP;
-        // else if(this.shouldGamble())
-        //     return SecondState.KEEP;
+        else if(card.val<=4 && this.shouldGamble(card))
+            return SecondState.KEEP;
         else
             return SecondState.DISCARD;
     }
+
+    private shouldGamble(card:Card):boolean{
+        if(this.allCardsAreKnown())
+            return false;
+        let betterInDeck=CardPack.howManyHaveBetterVal(card.val);
+        let knownBetter=this.countKnownBetter(card.val);
+        return ((betterInDeck-knownBetter)/(this.cntUnknownCards()))<0.2;
+    }
+    private allCardsAreKnown(){
+        return this.my_known_cards.length === 4;
+    }
+
     private async getTopOfDiscard(){
         return this.room.state.discard_pile[this.room.state.discard_pile.length-1];
     }
@@ -142,12 +246,22 @@ export class BotPlayer extends Player {
         return this.oddsForBetterInDeck(top_discard.val)<0.2; 
     }
     private oddsForBetterInDeck(val:number){
-        let betterInDeck=CardPack.howManyHaveButterVal(val);
-        let knownButter=this.countKnownButter(val);
-        return ((betterInDeck-knownButter)/this.room.state.pack.size);
+        let betterInDeck=CardPack.howManyHaveBetterVal(val);
+        let knownBetter=this.countKnownBetter(val);
+        return ((betterInDeck-knownBetter)/this.room.state.pack.size);
+    }
+    
+    private cntUnknownCards(){
+        //TODO: update the number of cards for each player
+        let cnt=this.room.state.pack.size;
+        for(let hand of this._players.values())
+            cnt+=4-hand.countKnown();
+        cnt+=(this._hand.size-this.my_known_cards.length);
+        return cnt;
+        
     }
 
-    private countKnownButter(val:number)//count how many of known card are butter the givan value
+    private countKnownBetter(val:number)//count how many of known card are better the givan value
     {
         let cnt;
         cnt=this.room.state.discard_pile.filter((card:Card)=>card.val<val).length;
@@ -163,5 +277,40 @@ export class BotPlayer extends Player {
                 cnt++;
         return cnt;
     }
+
+    public notifyPlayerTakeFromDiscard(playerId:string,card:Card,index:number){
+        this._players.get(playerId).addOpponentCard(index,card);
+    }
+
+    public notifyPlayerDiscardCard(playerId:string,index:number){
+        this._players.get(playerId).removeCard(index);
+    }
+
+    public notfiyCardsSwap(players:string[],indexes:number[]){
+        if(!players.includes(this.id))
+            this.othersSwaps(players,indexes);
+        else
+            this.swapWithMe(players,indexes);
+    }
+
+    private swapWithMe(players:string[],indexes:number[]){
+        let myIndex=players.indexOf(this.id);
+        let new_card=this._players.get(players[1-myIndex]).removeCard(indexes[1-myIndex]);
+        if(this.my_known_cards.includes(indexes[myIndex])){//if the bot know the card that the other player take from it
+            this._players.get(players[1-myIndex]).addOpponentCard(indexes[1-myIndex],this.getCard(indexes[myIndex]));
+        }
+        if(!new_card)//if the bot don't know the card it recive from the other player
+            this.my_known_cards=this.my_known_cards.filter((index:number)=>index!=indexes[myIndex]);
+    }
+
+    private othersSwaps(players:string[],indexes:number[]){
+        let card0=this._players.get(players[0]).removeCard(indexes[0]);
+        let card1=this._players.get(players[1]).removeCard(indexes[1]);
+        this._players.get(players[0]).addOpponentCard(indexes[0],card1);
+        this._players.get(players[1]).addOpponentCard(indexes[1],card0);
+    }
+
+
+
 
 }
