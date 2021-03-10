@@ -106,16 +106,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.cardRef = this.showCard(tmpCardPath0, topp, leftp);
     this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp + 400);
 
-    setTimeout(() => {
-      this.cardRef.instance.toggleStatus();
-    }, 500);
-    this.cardRef2.instance.toggleStatus();
+    this.cardRef.instance.toggleStatus(500);
+    this.cardRef2.instance.toggleStatus(500);
 
   }
 
   private removeFirstReveal() {
-    this.cardRef.instance.toggleStatus();
-    this.cardRef2.instance.toggleStatus();
+    this.cardRef.instance.toggleStatus(50);
+    this.cardRef2.instance.toggleStatus(50);
     setTimeout(() => {
       this.cardRef.destroy();
       this.cardRef2.destroy();
@@ -165,14 +163,12 @@ export class BoardComponent implements OnInit, AfterViewInit {
     const componentFactory = this.resolver.resolveComponentFactory(RevealedCardComponent);
     let tmpCardRef = this.container.createComponent(componentFactory);
     tmpCardRef.instance.data = { path: tmpCardPath, top: $event.top, left: $event.left };
-    setTimeout(() => { tmpCardRef.instance.toggleStatus(); }, 50);
+    tmpCardRef.instance.toggleStatus(50);
     this.fromPackOrDiscard(ix);
+    tmpCardRef.instance.toggleStatus(3000);
+    this.cardRef.instance.toggleStatus(3000);
     setTimeout(() => {
-      tmpCardRef.instance.toggleStatus();
       this.discardComponent.setTop(tmpCardRef.instance.path);
-      this.cardRef.instance.toggleStatus();
-    }, 3000);
-    setTimeout(() => {
       tmpCardRef.destroy();
       this.cardRef.destroy();
     }, 3500);
@@ -248,14 +244,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.room_service.swapTwoCards(this.swapString.trim());
     this.swapString = "";
   }
-// TO DO fix to be captain peekCard
+  // TO DO fix to be captain peekCard
   private peekCard(tmpCardRef: ComponentRef<RevealedCardComponent>) {
-    setTimeout(() => {
-      tmpCardRef.instance.toggleStatus();
-    }, 10);
-    setTimeout(() => {
-      tmpCardRef.instance.toggleStatus();
-    }, 3000);
+    tmpCardRef.instance.toggleStatus(50);
+    tmpCardRef.instance.toggleStatus(3000);
     setTimeout(() => {
       tmpCardRef.destroy();
     }, 3500);
@@ -268,7 +260,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let topp = this.center_elementRef.nativeElement.offsetTop;
     let leftp = this.center_elementRef.nativeElement.offsetLeft;
     this.cardRef = this.showCard(heldCard, topp, leftp);
-    setTimeout(() => { this.cardRef.instance.toggleStatus(); }, 50);
+    this.cardRef.instance.toggleStatus(50);
     this.keepOrDiscard();
   }
 
@@ -280,9 +272,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let topp = this.center_elementRef.nativeElement.offsetTop;
     let leftp = this.center_elementRef.nativeElement.offsetLeft;
     this.cardRef = this.showCard(heldCard, topp, leftp);
-    setTimeout(() => {
-      this.cardRef.instance.toggleStatus();
-    }, 10);
+    this.cardRef.instance.toggleStatus(50);
     this.playerGlow(Glow.keep);
   }
 
@@ -310,7 +300,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.state = states.getActionState(tmpCardPath);
     this.resolveCard();
     //TO DO animation
-    this.cardRef.instance.toggleStatus();
+    this.cardRef.instance.toggleStatus(50);
     setTimeout(() => {
       this.discardComponent.setTop(tmpCardPath);
       this.cardRef.destroy();
@@ -365,6 +355,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private gameOver(){
+    for (let i = 0; i < this.playerRefs.length; i++) {
+      setTimeout(() => {
+        this.playerRefs[i].instance.gameOver();
+      }, i*1100);
+    }
+  }
+
   private async loadMassages() {
     this.room_service.room.onMessage("everybody-ready", (message) => {
       this.removeFirstReveal();
@@ -374,6 +372,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
     });
     this.room_service.room.onMessage("cabo", (message) => {
       this.cabo = true;
+    });
+    this.room_service.room.onMessage("GameOver", (message) => {
+      this.gameOver();
     });
   }
 

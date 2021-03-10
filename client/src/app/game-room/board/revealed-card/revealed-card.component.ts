@@ -34,8 +34,10 @@ export class RevealedCardComponent implements OnInit {
 
   constructor( ) { }
 
-  public toggleStatus(){
-    this.status = this.status=='show' ? 'hide' : 'show';
+  public toggleStatus(time:number){
+    setTimeout(() => {
+      this.status = this.status=='show' ? 'hide' : 'show';
+    }, time);
   }
 
   ngOnInit(): void {

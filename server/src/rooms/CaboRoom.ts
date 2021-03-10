@@ -5,9 +5,9 @@ import { CaboState } from "./State/CaboState";
 
 export class CaboRoom extends Room {
   private currentTurnIndex: number;
-  private cabo_caller:string;
-  private readyPlayers:number=0;
-  private last_round:boolean=false;
+  private cabo_caller: string;
+  private readyPlayers: number = 0;
+  private last_round: boolean = false;
   constructor() {
     super();
   }
@@ -37,21 +37,21 @@ export class CaboRoom extends Room {
   }
 
   private async loadMassageListener() {
-    
-    this.onMessage("ready",async (client,message)=> {
+
+    this.onMessage("ready", async (client, message) => {
       this.readyPlayers++;
-      if(this.readyPlayers===this.maxClients){
+      if (this.readyPlayers === this.maxClients) {
         this.broadcast("everybody-ready", {});
         this.initPlayerTurn();
       }
     })
 
-    this.onMessage("nextTurn",(client, message) => {
-      this.currentTurnIndex=((this.currentTurnIndex+1)%this.state.num_of_players);
-      if(this.gameOver()){
+    this.onMessage("nextTurn", (client, message) => {
+      this.currentTurnIndex = ((this.currentTurnIndex + 1) % this.state.num_of_players);
+      if (this.gameOver()) {
         this.broadcast("GameOver", {});
-        let winner:string=this.calculateWinner();
-        this.notifyPlayersAboutResualt(winner);
+        let winner: string = this.calculateWinner();
+        this.notifyPlayersAboutResult(winner);
       }
       else
         this.initPlayerTurn();
@@ -69,7 +69,7 @@ export class CaboRoom extends Room {
       console.log(client.sessionId + " draw " + card);
       client.send("drawn-card", card.image);
       this.broadcast("player-draw-card", { id: client.sessionId }, { except: client });//notify other players about the move
-      if(this.state.pack.empty)
+      if (this.state.pack.empty)
         this.broadcast("empty-pack",);
     });
 
@@ -86,7 +86,7 @@ export class CaboRoom extends Room {
       this.state.discard_pile.push(card.image);
       console.log(client.sessionId + " swap the card in index " + message.index);//debug
       console.log(card.toString() + " added to discard pile");//debug
-      this.broadcast("player-take-from-deck", { player: client.sessionId, index: message.index, card:card.image }, { except: client });//notify other players about the move
+      this.broadcast("player-take-from-deck", { player: client.sessionId, index: message.index, card: card.image }, { except: client });//notify other players about the move
     });
 
     this.onMessage("take-from-discard", (client, message) => {
@@ -105,7 +105,7 @@ export class CaboRoom extends Room {
       this.broadcast("player-swap-two-cards", message, { except: client });//notify other players about the move
     });
 
-    this.onMessage("cabo",(client,message)=>{
+    this.onMessage("cabo", (client, message) => {
       this.cabo(client.sessionId);
     });
 
@@ -114,29 +114,31 @@ export class CaboRoom extends Room {
     });
 
   }
-  private gameOver():boolean{
-    return this.last_round && this.getCurrentTurnId()===this.cabo_caller;
+  private gameOver(): boolean {
+    return this.last_round && this.getCurrentTurnId() === this.cabo_caller;
   }
-  public cabo(cabo_caller_id:string){
-    this.last_round=true;
-    this.cabo_caller=cabo_caller_id;
-    this.broadcast("cabo",{player:cabo_caller_id});
+  public cabo(cabo_caller_id: string) {
+    this.last_round = true;
+    this.cabo_caller = cabo_caller_id;
+    this.broadcast("cabo", { player: cabo_caller_id });
   }
 
-  private calculateWinner(){
-    let scores=this.state.players.map((player:Player)=>player.getPoints());
-    let winnerIndex=scores.indexOf(Math.min(...scores));
+  private calculateWinner() {
+    let scores = this.state.players.map((player: Player) => player.getPoints());
+    let winnerIndex = scores.indexOf(Math.min(...scores));
     return this.state.players[winnerIndex].client.sessionId;
   }
-  
-  private notifyPlayersAboutResualt(winnerId:string){
-    let winner=this.getPlayerById(winnerId);
-    this.state.players.forEach((player:Player) => {
-      player.client.send("my-end-point",{me:player.toString(),points:player.getPoints()});
-      if(winnerId!=player.client.sessionId)
-        player.client.send("winner",{winner:winner.toString(),points:winner.getPoints()});
-      else
-        player.client.send("you-win",{});
+
+  private notifyPlayersAboutResult(winnerId: string) {
+    let winner = this.getPlayerById(winnerId);
+    this.state.players.forEach((player: Player) => {
+      player.client.send("my-end-point", player.getPoints());
+      // player.client.send("my-end-point",{me:player.toString(),points:player.getPoints()});
+      // if(winnerId!=player.client.sessionId)
+      //   player.client.send("winner",{winner:winner.toString(),points:winner.getPoints()});
+      // else
+      //   player.client.send("you-win",{});
+      player.client.send("winner", winnerId);
 
     });
   }
