@@ -14,7 +14,7 @@ import { Component, Input, OnInit } from '@angular/core';
       })),
       state('float', style({
         transform: 'scale(1.1,1.1)',
-        boxShadow: '0 10px 6px -6px #777'
+        boxShadow: '0 14px 9px -9px #777'
       })),
       state('hide', style({
         opacity: '0',
@@ -46,28 +46,24 @@ export class CardComponent implements OnInit {
       case 'orange':
         this.glowStyle = "glow-orange 1s ease-in-out infinite alternate";
         break;
+      case 'red':
+        this.glowStyle = "glow-red 1s ease-in-out infinite alternate";
+        break;
       case 'none':
         this.glowStyle = "none";
         break;
       default:
-        throw "Card can't set glow, invalid value provided -- '" + color + "'";
+        throw "Card can't setGlow, invalid value provided -- '" + color + "'";
     }
   }
 
   public toggleHide( bool: boolean ){
-    console.log("toggle status before -- " + this.status );
     this.status = bool==true ? 'hide' : 'none';
-    console.log("toggle status after -- " + this.status );
-    // setTimeout( () => {
-    //   this.status='none';
-    // }, 2000);
   }
 
   public toggleFloat(){
     this.status = 'float';
-    setTimeout( () => {
-      this.status='none';
-    }, 2000);
+    setTimeout( () => { this.status='none'; }, 2000);
   }
 
   constructor() { }

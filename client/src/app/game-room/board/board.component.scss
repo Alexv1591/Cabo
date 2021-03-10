@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Potta+One');
+
 :host{
     height: 100%;
     width: 70%;
@@ -36,23 +39,28 @@ div.placeholder {
     }
 }
 
-.pack_discard{
+.center_element{
     position: absolute;
     top: 50%;
     left: 35%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%,-50%);
-    padding: 33px;
-    border-radius: 15px;
-    box-shadow: inset 0 0 9px black;
     .row{
         .col- {
             padding: 1em;
         }
     }
+
 }
 
-h1{
-    font-size: 10em;
+.pack_discard{
+    padding: 27px;
+    border-radius: 15px;
+    box-shadow: inset 0 0 9px black;
+}
 
+.cabo_btn{
+    padding: 5px;
+    margin: 20px;
+    font-family: 'Potta One', cursive;
 }

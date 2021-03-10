@@ -43,8 +43,10 @@ export class CaboRoom extends Room {
     
     this.onMessage("ready",async (client,message)=> {
       this.readyPlayers++;
-      if(this.readyPlayers===this.maxClients)
+      if(this.readyPlayers===this.maxClients){
+        this.broadcast("everybody-ready", {});
         this.initPlayerTurn();
+      }
     })
 
     this.onMessage("nextTurn",(client, message) => {

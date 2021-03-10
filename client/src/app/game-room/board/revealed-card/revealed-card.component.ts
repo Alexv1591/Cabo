@@ -3,30 +3,29 @@ import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-revealed-card',
-  template: `<img [@slideStatus]="status" src={{path}} [style.top.px]="top" [style.left.px]="left">`,
+  template: `<img [@showStatus]="status" src={{path}} [style.top.px]="top" [style.left.px]="left">`,
   styleUrls: ['./revealed-card.component.scss'],
   animations: [
-    trigger('slideStatus', [
-      state('in', style({
+    trigger('showStatus', [
+      state('show', style({
         overflow: 'hidden',
         height: '*',
         width: '*'
       })),
-      state('out', style({
+      state('hide', style({
         opacity: '0',
         overflow: 'hidden',
-        height: '0px',
-        width: '0px'
+        height: '0px'
       })),
-      transition('in => out', animate('200ms ease')),
-      transition('out => in', animate('300ms ease')),
-      //transition('out => out', animate('0ms')),
+      transition('show => hide', animate('200ms ease')),
+      transition('hide => show', animate('300ms ease')),
+      transition('hide => hide', animate('0ms')),
     ])
   ]
 })
 export class RevealedCardComponent implements OnInit {
 
-  status: 'in' | 'out' = 'out';
+  status: 'show' | 'hide' = 'hide';
 
   @Input('data') data: any;
   path:any;
@@ -36,7 +35,7 @@ export class RevealedCardComponent implements OnInit {
   constructor( ) { }
 
   public toggleStatus(){
-    this.status = this.status=='in' ? 'out' : 'in';
+    this.status = this.status=='show' ? 'hide' : 'show';
   }
 
   ngOnInit(): void {
