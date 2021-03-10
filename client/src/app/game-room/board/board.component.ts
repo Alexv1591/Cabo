@@ -104,7 +104,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let tmpCardPath0 = await this.room_service.getCard(this.playerRefs[0].instance.id, 0);
     let tmpCardPath1 = await this.room_service.getCard(this.playerRefs[0].instance.id, 1);
     this.cardRef = this.showCard(tmpCardPath0, topp, leftp);
-    this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp + 300);
+    this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp + 400);
 
     setTimeout(() => {
       this.cardRef.instance.toggleStatus();
