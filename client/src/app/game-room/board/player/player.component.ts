@@ -10,7 +10,6 @@ import { CardComponent } from '../card/card.component';
 export class PlayerComponent implements OnInit, AfterViewInit {
 
   @Input('data') data: any;
-
   @ViewChild('container', { static: true }) container: ElementRef;
   @ViewChild('_0', { read: ViewContainerRef }) _0: ViewContainerRef;
   @ViewChild('_1', { read: ViewContainerRef }) _1: ViewContainerRef;
@@ -26,6 +25,7 @@ export class PlayerComponent implements OnInit, AfterViewInit {
   private playerId: string;
   private isClickable: boolean = false;
   private canKeep: boolean = false;
+  points: number = 100;
 
   @Output() public choice: EventEmitter<any> = new EventEmitter();
   @Output() public keep: EventEmitter<any> = new EventEmitter();
@@ -35,7 +35,7 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     this.cardRefs = new Array<ComponentRef<CardComponent>>();
   }
 
-  containerClick($event,containerId: string): void {
+  containerClick($event, containerId: string): void {
     let ix = Number(containerId);
     let topp = $event.clientY;
     let leftp = $event.clientX;
@@ -74,18 +74,36 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     this.firstRevealHide();
   }
 
-  private firstRevealHide(){
+  private firstRevealShow() {
+    setTimeout(() => {
+      this.cardRefs[0].instance.toggleHide(false);
+      this.cardRefs[1].instance.toggleHide(false);
+    }, 50);
+  }
+
+  private firstRevealHide() {
     setTimeout(() => {
       this.cardRefs[0].instance.toggleHide(true);
       this.cardRefs[1].instance.toggleHide(true);
     }, 50);
   }
 
-  private firstRevealShow(){
-    setTimeout(() => {
-      this.cardRefs[0].instance.toggleHide(false);
-      this.cardRefs[1].instance.toggleHide(false);
-    }, 50);
+  public async gameOver() {
+    for (let i = 0; i < this.cardRefs.length; i++) {
+      if (!this.isEmpty[i]) {
+        setTimeout(async () => {
+          let path = await this.room_service.getCard(this.playerId, i);
+          this.cardRefs[i].instance.GameOverChangePic(path);
+        }, i * 200);
+      }
+    }
+
+  }
+
+  private winner() {
+    for (let i = 0; i < this.cardRefs.length; i++)
+      if (!this.isEmpty[i])
+        this.cardRefs[i].instance.setGlow("green");
   }
 
   private setPosition(top: string, left: string, rotation: string): void {
@@ -114,6 +132,13 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     this.room_service.room.onMessage("card-clicked", (message) => {
       if (this.playerId == message.player)
         this.cardRefs[message.index].instance.toggleFloat();
+    });
+    this.room_service.room.onMessage("winner", (message) => {
+      if (this.playerId == message)
+        this.winner();
+    });
+    this.room_service.room.onMessage("my-end-point", (message) => {
+      this.points = Number(message);
     });
   }
 }

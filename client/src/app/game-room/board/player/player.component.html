@@ -1,7 +1,7 @@
 <div id="container" #container>
 
-  <div class="row justify-content-center" style="height: 8%; margin-bottom: 0.5em;">
-    ID {{id}}
+  <div class="row justify-content-center" style="height: 10%; margin-bottom: 0.5em;">
+    ID {{id}} <p *ngIf="points<100"> <b>{{points}}</b> points</p>
   </div>
 
   <div class="row " style="height: 45%;">

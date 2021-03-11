@@ -3,7 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-card',
-  template: `<img [@floatStatus]="status" *ngIf="!empty" src="assets/Cards/Back.png" [style.animation]="glowStyle">`,
+  template: `<img [@floatStatus]="status" *ngIf="!empty" src={{src}} [style.animation]="glowStyle">`,
   styleUrls: ['./card.component.scss'],
   animations: [
     trigger('floatStatus', [
@@ -13,14 +13,13 @@ import { Component, Input, OnInit } from '@angular/core';
         width: '*'
       })),
       state('float', style({
-        transform: 'scale(1.1,1.1)',
+        transform: 'scale(1.2,1.2)',
         boxShadow: '0 14px 9px -9px #777'
       })),
       state('hide', style({
         opacity: '0',
         overflow: 'hidden',
-        height: '0px',
-        width: '0px'
+        height: '0px'
       })),
       transition('none => hide', animate('0ms')),
       transition('* => *', animate('500ms ease'))
@@ -29,13 +28,15 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class CardComponent implements OnInit {
 
-  @Input('empty') empty:boolean;
+  @Input('empty') empty: boolean;
 
   glowStyle: string = 'none';
 
   status: 'none' | 'float' | 'hide' = 'none';
 
-  public setGlow( color: string ){
+  src: string = "assets/Cards/Back.png";
+
+  public setGlow(color: string) {
     switch (color) {
       case 'green':
         this.glowStyle = "glow-green 1s ease-in-out infinite alternate";
@@ -57,20 +58,28 @@ export class CardComponent implements OnInit {
     }
   }
 
-  public toggleHide( bool: boolean ){
-    this.status = bool==true ? 'hide' : 'none';
+  public toggleHide(bool: boolean) {
+    this.status = bool == true ? 'hide' : 'none';
   }
 
-  public toggleFloat(){
+  public toggleFloat() {
     this.status = 'float';
-    setTimeout( () => { this.status='none'; }, 2000);
+    setTimeout(() => { this.status = 'none'; }, 2000);
+  }
+
+  public GameOverChangePic(path: any) {
+    this.toggleHide(true);
+    setTimeout(() => {
+      this.src = path;
+      this.toggleHide(false);
+    }, 200);
   }
 
   constructor() { }
 
   ngOnInit(): void { }
 
-  get isEmpty():boolean{
+  get isEmpty(): boolean {
     return this.empty;
   }
 
