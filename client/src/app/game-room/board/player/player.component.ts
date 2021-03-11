@@ -92,7 +92,7 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     for (let i = 0; i < this.cardRefs.length; i++) {
       if (!this.isEmpty[i]) {
         setTimeout(async () => {
-          let path = await this.room_service.getCard(this.playerId, i);
+          let path = await this.room_service.getCard(i,this.playerId);
           this.cardRefs[i].instance.GameOverChangePic(path);
         }, i * 200);
       }
