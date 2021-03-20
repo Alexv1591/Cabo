@@ -49,14 +49,7 @@ export class CaboRoom extends Room {
     })
 
     this.onMessage("nextTurn", (client, message) => {
-      this.currentTurnIndex = ((this.currentTurnIndex + 1) % this.state.num_of_players);
-      if (this.gameOver()) {
-        this.broadcast("GameOver", {});
-        let winner: string = this.calculateWinner();
-        this.notifyPlayersAboutResult(winner);
-      }
-      else
-        this.initPlayerTurn();
+      this.nextTurn();
     });
 
     this.onMessage("to_discard", (client, message) => {
@@ -64,10 +57,7 @@ export class CaboRoom extends Room {
     });
 
     this.onMessage("draw-card", (client, message) => {
-      let card = this.state.pack.draw();
-      console.log(client.sessionId + " draw " + card);
-      client.send("drawn-card", card.image);
-      this.broadcast("player-draw-card", { id: client.sessionId }, { except: client });//notify other players about the move
+      this.drawCard(this.getPlayerById(client.sessionId))
       if (this.state.pack.empty)
         this.broadcast("empty-pack",);
     });
@@ -77,12 +67,7 @@ export class CaboRoom extends Room {
     });
 
     this.onMessage("take-from-deck", (client, message) => {
-      let player: Player = this.getPlayerById(client.sessionId);
-      let card = player.swapCard(Card.CardFromPathFactory(message.card), message.index);
-      this.state.discard_pile.push(card.image);
-      console.log(client.sessionId + " swap the card in index " + message.index);//debug
-      console.log(card.toString() + " added to discard pile");//debug
-      this.broadcast("player-take-from-deck", { player: client.sessionId, index: message.index, card: card.image }, { except: client });//notify other players about the move
+      this.takeFromDeck(this.getPlayerById(client.sessionId), Card.CardFromPathFactory(message.card), message.index);
     });
 
     this.onMessage("take-from-discard", (client, message) => {
@@ -114,7 +99,7 @@ export class CaboRoom extends Room {
   private calculateWinner() {
     let scores = this.state.players.map((player: Player) => player.getPoints());
     let winnerIndex = scores.indexOf(Math.min(...scores));
-    return this.state.players[winnerIndex].client.sessionId;
+    return this.state.players[winnerIndex].id;
   }
 
   private notifyPlayersAboutResult(winnerId: string) {
@@ -122,11 +107,6 @@ export class CaboRoom extends Room {
     this.state.players.forEach((player: Player) => {
       if (player instanceof UserPlayer) {
         player.client.send("my-end-point", player.getPoints());
-        // player.client.send("my-end-point",{me:player.toString(),points:player.getPoints()});
-        // if(winnerId!=player.client.sessionId)
-        //   player.client.send("winner",{winner:winner.toString(),points:winner.getPoints()});
-        // else
-        //   player.client.send("you-win",{});
         player.client.send("winner", winnerId);
       }
     });
@@ -165,11 +145,13 @@ export class CaboRoom extends Room {
 
   private initPlayerTurn() {
     this.state.currentTurn = this.getCurrentTurnId();
-    if (this.state.players[this.currentTurnIndex] instanceof UserPlayer)
-      this.state.players[this.currentTurnIndex].client.send("my-turn", { afterNextPatch: true });
-    else {
-      this.state.players[this.currentTurnIndex].BotTurn();
-    }
+    setTimeout(() => {
+      if (this.state.players[this.currentTurnIndex] instanceof UserPlayer)
+        this.state.players[this.currentTurnIndex].client.send("my-turn", { afterNextPatch: true });
+      else
+        this.state.players[this.currentTurnIndex].BotTurn();
+    }, 3000);
+
   }
 
   private sendPlayers() {
@@ -246,6 +228,7 @@ export class CaboRoom extends Room {
     let new_card = this.state.discard_pile.pop();
     let discard = player.swapCard(new_card, replaceIndex);
     console.log(player.id + " take from discard " + player.getCard(replaceIndex));
+    console.log(discard.toString() + " added to discard pile");
     this.broadcast("player-take-from-deck", discard.image, (player instanceof UserPlayer) ? { except: player.client } : {});//notify other players about the move
     this.getBots().filter((bot: BotPlayer) => bot.id != player.id).forEach((bot: BotPlayer) => { bot.notifyPlayerTakeFromDiscard(player.id, new_card, replaceIndex); });
   }
