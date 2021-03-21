@@ -50,6 +50,8 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 
   public get id() { return this.playerId; }
 
+  public setPoints( pts: number ){ this.points = pts; }
+
   public setGlow(color: string) {
     this.isClickable = color != 'none';
     if (color == 'lightgreen') { //TO DO create lightgreen
@@ -136,9 +138,6 @@ export class PlayerComponent implements OnInit, AfterViewInit {
     this.room_service.room.onMessage("winner", (message) => {
       if (this.playerId == message)
         this.winner();
-    });
-    this.room_service.room.onMessage("my-end-point", (message) => {
-      this.points = Number(message);
     });
   }
 }

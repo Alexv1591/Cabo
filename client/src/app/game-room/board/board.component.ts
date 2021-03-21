@@ -104,8 +104,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.cardRef = this.showCard(tmpCardPath0, topp, leftp);
     this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp + 400);
 
-    this.cardRef.instance.toggleStatus(500);
-    this.cardRef2.instance.toggleStatus(500);
+    this.cardRef.instance.toggleStatus(800);
+    this.cardRef2.instance.toggleStatus(800);
 
   }
 
@@ -361,6 +361,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private distributePoints( points: number[] ){
+    for (let i = 0; i < this.playerRefs.length; i++)
+        this.playerRefs[i].instance.setPoints(points[i]);
+  }
+
   private async loadMassages() {
     this.room_service.room.onMessage("everybody-ready", (message) => {
       this.removeFirstReveal();
@@ -373,6 +378,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
     });
     this.room_service.room.onMessage("GameOver", (message) => {
       this.gameOver();
+    });
+    this.room_service.room.onMessage("points", (message) => {
+      console.log(message);
+      this.distributePoints(message);
+      //this.points = Number(message);
     });
   }
 
