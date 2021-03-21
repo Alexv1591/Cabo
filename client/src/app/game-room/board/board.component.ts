@@ -380,11 +380,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
       this.gameOver();
     });
     this.room_service.room.onMessage("points", (message) => {
-      console.log(message);
       this.distributePoints(message);
-      //this.points = Number(message);
     });
   }
-
+  
 
 }

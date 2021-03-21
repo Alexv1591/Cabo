@@ -232,7 +232,7 @@ export class CaboRoom extends Room {
     let discard = player.swapCard(new_card, replaceIndex);
     console.log(player.id + " take from discard " + player.getCard(replaceIndex));
     console.log(discard.toString() + " added to discard pile");
-    this.broadcast("player-take-from-deck", discard.image, (player instanceof UserPlayer) ? { except: player.client } : {});//notify other players about the move
+    this.broadcast("player-take-from-discard", discard.image, (player instanceof UserPlayer) ? { except: player.client } : {});//notify other players about the move
     this.getBots().filter((bot: BotPlayer) => bot.id != player.id).forEach((bot: BotPlayer) => { bot.notifyPlayerTakeFromDiscard(player.id, new_card, replaceIndex); });
   }
 
@@ -249,7 +249,7 @@ export class CaboRoom extends Room {
     let card = players[0].swapCard(players[1].getCard(indexes[1]), indexes[0]);
     players[1].swapCard(card, indexes[1]);
     console.log("Room: after->" + players[0] + " " + players[1]);
-    this.broadcast("swap-two-cards", message, (requester instanceof UserPlayer) ? { except: requester.client } : {});//notify other players about the move
+    this.broadcast("swap-two-cards", message);//notify other players about the move
 
   }
   private getBots() {

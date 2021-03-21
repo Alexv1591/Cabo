@@ -54,7 +54,7 @@ export class BotPlayer extends Player {
     private static _bot_index = 0;
     private _players: Map<string, OpponentHand>;
     private my_known_cards: Array<number>;
-    private drwanCard: Card;
+    private drawnCard: Card;
     constructor(private room: CaboRoom) {
         super();
         super._id = "AI" + (++BotPlayer._bot_index);
@@ -90,15 +90,15 @@ export class BotPlayer extends Player {
         //dumpster diveS
         if ((await this.drawOrDive()) === FirstState.DUMPSTER_DIVE)
             if (this.keepOrDiscard(await this.getTopOfDiscard()) === SecondState.KEEP) {
-                this.drwanCard = await this.getTopOfDiscard();
+                this.drawnCard = await this.getTopOfDiscard();
                 this.keepCard(FirstState.DUMPSTER_DIVE);
                 setTimeout(() => this.room.nextTurn(), 1000);
                 return;
             }
         //draw from deck
 
-        this.drwanCard = await this.room.drawCard(this);
-        switch (this.keepOrDiscard(this.drwanCard)) {
+        this.drawnCard = await this.room.drawCard(this);
+        switch (this.keepOrDiscard(this.drawnCard)) {
             case SecondState.KEEP:
                 this.keepCard(FirstState.DRAW);
                 break;
@@ -112,13 +112,13 @@ export class BotPlayer extends Player {
     }
 
     private async discardCard() {
-        if (this.drwanCard.isActionCard())
+        if (this.drawnCard.isActionCard())
             await this.actionCard();
-        this.room.toDiscard(this, this.drwanCard);
+        this.room.toDiscard(this, this.drawnCard);
     }
 
     private async actionCard() {
-        switch (this.drwanCard.rank) {
+        switch (this.drawnCard.rank) {
             case RANK.SEVEN:
             case RANK.EIGHT:
                 await this.lookAtMyCard(this.randomUnknownIndex());
@@ -181,12 +181,12 @@ export class BotPlayer extends Player {
     private async keepCard(drawOrDive: FirstState) {
         let max_entry = this.getMaximumEntry();
         let indexForNew;
-        if (this.drwanCard.val < max_entry[1])
+        if (this.drawnCard.val < max_entry[1])
             indexForNew = max_entry[0];
         else
             indexForNew = this.randomUnknownIndex();
         if (drawOrDive === FirstState.DRAW) {
-            await this.room.takeFromDeck(this, this.drwanCard, indexForNew);
+            await this.room.takeFromDeck(this, this.drawnCard, indexForNew);
         }
         else
             await this.room.takeFromDiscard(this, indexForNew);
