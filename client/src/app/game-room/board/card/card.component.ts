@@ -21,6 +21,12 @@ import { Component, Input, OnInit } from '@angular/core';
         overflow: 'hidden',
         height: '0px'
       })),
+      state('fly', style({
+        opacity: '0',
+        overflow: 'hidden',
+        transform: 'translateY(-200px)',
+        width: '50px'
+      })),
       transition('none => hide', animate('0ms')),
       transition('* => *', animate('500ms ease'))
     ])
@@ -32,7 +38,7 @@ export class CardComponent implements OnInit {
 
   glowStyle: string = 'none';
 
-  status: 'none' | 'float' | 'hide' = 'none';
+  status: 'none' | 'float' | 'hide' | 'fly' = 'none';
 
   src: string = "assets/Cards/Back.png";
 
@@ -58,13 +64,16 @@ export class CardComponent implements OnInit {
     }
   }
 
-  public toggleHide(bool: boolean) {
-    this.status = bool == true ? 'hide' : 'none';
-  }
+  public toggleHide(bool: boolean) { this.status = bool == true ? 'hide' : 'none'; }
 
   public toggleFloat() {
     this.status = 'float';
     setTimeout(() => { this.status = 'none'; }, 2000);
+  }
+
+  public toggleFly() {
+    this.status = 'fly';
+    setTimeout(() => { this.status = 'none'; }, 1000);
   }
 
   public GameOverChangePic(path: any) {
