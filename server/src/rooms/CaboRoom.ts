@@ -104,11 +104,14 @@ export class CaboRoom extends Room {
 
   private notifyPlayersAboutResult(winnerId: string) {
     let winner = this.getPlayerById(winnerId);
+    let playersPoints = this.state.players.map((player: any) => player.getPoints());
     this.state.players.forEach((player: Player) => {
-      if (player instanceof UserPlayer) {
-        player.client.send("my-end-point", player.getPoints());
+      if (player instanceof UserPlayer) {  
+        player.client.send("points", playersPoints);
         player.client.send("winner", winnerId);
       }
+      let val = playersPoints.shift();
+      playersPoints.push(val);
     });
   }
 
