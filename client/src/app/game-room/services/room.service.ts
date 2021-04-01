@@ -13,7 +13,7 @@ export class RoomService {
   private _room:Room;
   private _client:Client;
   private _serverMsg:any; 
-  private _players:Array<string>;
+  private _initialData:any;
   private _myId:string;
   private _messages:Subject<any>=new BehaviorSubject<any>([]);
 
@@ -24,7 +24,9 @@ export class RoomService {
 
   public get myId() : string {  return this._myId;  }
 
-  public get players() : string[] { return this._players;}
+  public get players() : string[] { return this._initialData.ids;}
+
+  public get first2cards() : string[] { return this._initialData.cards;}
 
   public get messages() { 
       return this._messages.asObservable();
@@ -90,7 +92,7 @@ export class RoomService {
 
     this.room.onMessage("get-card",(card)=>{this._serverMsg=card;});
 
-    this.room.onMessage("players", (players:Array<string>)=>this._players=players);
+    this.room.onMessage("init-game", (dat:any)=>{this._initialData=dat});
 
     this.room.onMessage("chat-message",(message)=>this._messages.subscribe((messages)=>messages.push(message)));
 
