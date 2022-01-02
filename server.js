@@ -14,8 +14,8 @@ app.use(express.static('./dist/client/cabo'));
 app.use(express.static('./dist/server/my-app'));
 
 app.get('/*', function(req, res) {
-    res.sendFile('index.html', {root: 'dist/client/cabo/'}
+    res.sendFile('index.ts', {root: 'dist/client/cabo/'}
   );
-  });
+});
 
 app.listen(process.env.PORT || 8080);
