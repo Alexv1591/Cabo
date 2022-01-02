@@ -139,6 +139,10 @@ export class PlayerComponent implements OnInit, AfterViewInit {
       if (this.playerId == message)
         this.winner();
     });
+    this.room_service.room.onMessage("player-take-from-deck", (message) => {
+      if (this.playerId == message.player)
+        this.cardRefs[message.index].instance.toggleFly();
+    });
     this.room_service.room.onMessage("swap-two-cards", (message) => {
       if (this.playerId == message.players[0])
         this.cardRefs[message.cards[0]].instance.toggleFly();

@@ -223,7 +223,7 @@ export class CaboRoom extends Room {
     this.state.discard_pile.push(discard);
     console.log(player.id + " swap the card in index " + replaceIndex);//debug
     console.log(discard.toString() + " added to discard pile");//debug
-    this.broadcast("player-take-from-deck", { player: player.id, index: replaceIndex, card: discard.image }, (player instanceof UserPlayer) ? { except: player.client, afterNextPatch: true } : {});//notify other players about the move
+    this.broadcast("player-take-from-deck", { player: player.id, index: replaceIndex, card: discard.image });//notify other players about the move
     this.getBots().filter((bot: BotPlayer) => bot.id != player.id).forEach((bot: BotPlayer) => { bot.notifyPlayerDiscardCard(player.id, replaceIndex); });
   }
 
