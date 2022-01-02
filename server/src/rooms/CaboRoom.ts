@@ -141,7 +141,7 @@ export class CaboRoom extends Room {
     for (let player of this.state.players) {
       console.log(player + "")
     }
-    this.sendPlayers();
+    this.sendPlayersInitialData();
     this.currentTurnIndex = CaboRoom.getRandomInt(this.state.num_of_players);//Randomly chose the first player
     this.broadcast('game-start',);//TODO: send to card from the hand for every player
   }
@@ -157,11 +157,12 @@ export class CaboRoom extends Room {
 
   }
 
-  private sendPlayers() {
+  private sendPlayersInitialData() {
     let playersId = this.state.players.map((value: any) => value.id);
     for (let player of this.state.players.values()) {
-      if (player instanceof UserPlayer)
-        player.client.send("players", playersId);
+      if(player instanceof UserPlayer){
+        player.client.send("init-game", {ids:playersId, cards:[player.getCard(0).image,player.getCard(1).image]});
+      }
       else
         player.initBotData(playersId);
       let val = playersId.shift();

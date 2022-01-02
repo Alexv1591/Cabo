@@ -99,8 +99,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
     let topp = this.host.nativeElement.offsetHeight - 230;
     let leftp = Math.round(this.host.nativeElement.offsetWidth * 0.35);
 
-    let tmpCardPath0 = await this.room_service.getCard(0);
-    let tmpCardPath1 = await this.room_service.getCard(1);
+    let tmpCardPath0 = await this.room_service.first2cards[0];
+    let tmpCardPath1 = await this.room_service.first2cards[1];
     this.cardRef = this.showCard(tmpCardPath0, topp, leftp);
     this.cardRef2 = this.showCard(tmpCardPath1, topp, leftp + 400);
 
