@@ -1,0 +1,9 @@
+{
+    "name": "cabo-card-game",
+    "version": "1.0.0",
+    "description": "Cabo powered by Colyseus",
+    "scripts": {
+      "install": "npm install --prefix ./server && npm install --prefix ./client",
+      "start": "npm start --prefix ./server && npm start --prefix ./client"
+    }
+  }
