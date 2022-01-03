@@ -6,15 +6,25 @@ function requireHTTPS(req, res, next) {
     next();
 }
 const express = require('express');
-//const app = express();
 const app = express();
 app.use(requireHTTPS);
+
+
+// const Colyseus = require("colyseus");
+// const CaboRoom = require('./src/rooms/CaboRoom').CaboRoom;
+
+
+// const gameServer = new Colyseus.Server({
+//     server: http.createServer(app),
+//     express: app
+//   });
+// gameServer.define('CaboRoom',CaboRoom);
 
 app.use(express.static('./dist/client/cabo'));
 app.use(express.static('./dist/server/my-app'));
 
 app.get('/*', function(req, res) {
-    res.sendFile('index.ts', {root: 'dist/client/cabo/'}
+    res.sendFile('main.ts', {root: 'dist/client/cabo/'}
   );
 });
 
